@@ -1,7 +1,6 @@
-﻿using System;
-namespace Withings.NET
+﻿namespace Withings.NET
 {
-	public class MyClass
+    public class MyClass
 	{
 		public MyClass()
 		{

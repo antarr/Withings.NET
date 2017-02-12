@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Withings.NET", "Withings.NET\Withings.NET.csproj", "{D2E459A9-C641-40A5-9124-35A4539E90EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Withings.Net.Specifications", "Withings.Net.Specifications\Withings.Net.Specifications.csproj", "{36B91432-1E60-4403-A9CB-2122DAE13443}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,5 +15,9 @@ Global
 		{D2E459A9-C641-40A5-9124-35A4539E90EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2E459A9-C641-40A5-9124-35A4539E90EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2E459A9-C641-40A5-9124-35A4539E90EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36B91432-1E60-4403-A9CB-2122DAE13443}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36B91432-1E60-4403-A9CB-2122DAE13443}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36B91432-1E60-4403-A9CB-2122DAE13443}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36B91432-1E60-4403-A9CB-2122DAE13443}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

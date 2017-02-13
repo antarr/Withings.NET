@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Web;
 using System.Collections.Specialized;
 using System.Runtime.CompilerServices;
@@ -12,7 +11,7 @@ namespace Withings.NET
 	public class WithingsClient
 	{
 		static string apiRoot = "oauth.withings.com/account";
-		static string consumerKey = Environment.GetEnvironmentVariable("WithingsKey"); // ConfigurationManager.AppSettings["WithingsKey"];
+		static string consumerKey = Environment.GetEnvironmentVariable("WithingsKey");
 		static string consumerSecret = Environment.GetEnvironmentVariable("WithingsSecret");
 		static string callbackUrl = Environment.GetEnvironmentVariable("WithingsCallbackUrl");
 		string ResquestToken;

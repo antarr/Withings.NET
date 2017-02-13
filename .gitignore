@@ -7,7 +7,6 @@
 packages/
 TestResults/
 WithingsCredentials.ps1
-
 # globs
 Makefile.in
 *.DS_Store
@@ -28,15 +27,11 @@ autom4te.cache/
 tarballs/
 test-results/
 Thumbs.db
-
 # Mac bundle stuff
 *.dmg
 *.app
-
 # resharper
 *_Resharper.*
 *.Resharper
-
 # dotCover
 *.dotCover
-Withings.NET/app.config

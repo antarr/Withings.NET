@@ -1,7 +1,9 @@
 ﻿using Withings.NET;
 using Machine.Specifications;
+
 namespace When
 {
+	[Tags("Integration")]
     public class GettingRequestToken
 	{
 		static WithingsClient Subject;

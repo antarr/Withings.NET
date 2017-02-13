@@ -8,7 +8,6 @@ namespace When
 	{
 		static WithingsClient Subject;
 
-
 		Because GetRequstTokenHasNotBeenCalled = () => Subject = new WithingsClient();
 
 		It ShouldHaveANullOauthToken = () => Subject.oauthToken.ShouldBeNull();

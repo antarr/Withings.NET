@@ -6,6 +6,7 @@
 [Bb]in/
 packages/
 TestResults/
+WithingsCredentials.ps1
 
 # globs
 Makefile.in
@@ -39,3 +40,4 @@ Thumbs.db
 
 # dotCover
 *.dotCover
+Withings.NET/app.config

@@ -12,9 +12,9 @@ namespace Withings.NET
 	public class WithingsClient
 	{
 		static string apiRoot = "oauth.withings.com/account";
-		static string consumerKey = ConfigurationManager.AppSettings["WithingsKey"];
-		static string consumerSecret = ConfigurationManager.AppSettings["WithingsSecret"];
-		static string callbackUrl = ConfigurationManager.AppSettings["WithingsCallbackUrl"];
+		static string consumerKey = Environment.GetEnvironmentVariable("WithingsKey"); // ConfigurationManager.AppSettings["WithingsKey"];
+		static string consumerSecret = Environment.GetEnvironmentVariable("WithingsSecret");
+		static string callbackUrl = Environment.GetEnvironmentVariable("WithingsCallbackUrl");
 		string ResquestToken;
 
 		internal string oauthToken;

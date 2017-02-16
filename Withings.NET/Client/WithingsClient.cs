@@ -37,7 +37,7 @@ namespace Withings.NET.Client
 			client.Authenticator = OAuth1Authenticator.ForRequestToken(consumerKey, consumerSecret, callbackUrl);
 			((OAuth1Authenticator)client.Authenticator).ParameterHandling = OAuthParameterHandling.UrlOrPostParameters;
 
-			var request = new RestRequest("request_token", Method.GET);
+			var request = new RestRequest("/request_token", Method.GET);
 			var response = client.Execute(request);
 
 			if (response.StatusCode == HttpStatusCode.OK)
@@ -49,6 +49,9 @@ namespace Withings.NET.Client
 				request.AddParameter("oauth_token", OauthToken);
 				requestUrl = client.BuildUri(request).ToString();
 			}
+			request = new RestRequest(api_root);
+			request.AddParameter("oauth_token", OauthToken);
+			requestUrl = client.BuildUri(request).ToString();
 			return requestUrl;
 		}
 

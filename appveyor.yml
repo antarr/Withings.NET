@@ -1,5 +1,27 @@
+version: 0.0.{build}
 environment:
+  COVERALLS_REPO_TOKEN: YSFpmvyKxWWqmZnxciJaPUj9z90AES0ZT
+  CODECOV_TOKEN: 7f626644-044e-4635-9b64-49cb5fdef210
+  WithingsCallbackUrl: http://localhost/api/callback
   WithingsConsumerKey:
     secure: 6f36zRSfkGxWeGwEyDfpKAcCqyvXd29yBCLNPpnirHp7DLt6AlSqS5IZI/TlKhaCUKGHmfjyWkTjwumO6Xl9yg==
   WithingsConsumerSecret:
     secure: qkVbHi4RLY0nv3NLjxfrFfDrQ9SlIfj4HtQKlTXkYCCC/sVa8pOhsve1Ec344/IwktSYZlSUHKLkTMETckSYcA==
+before_build:
+- ps: >-
+    nuget restore
+
+    appveyor-retry dotnet restore -v Minimal
+build:
+  project: Withings.NET.sln
+  verbosity: quiet
+test:
+  categories:
+    except:
+    - Integration
+after_test:
+- ps: >-
+    packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -filter:"+[*]*" -target:"packages\Machine.Specifications.Runner.Console.0.9.2\tools\mspec-x86-clr4.exe" -targetargs:"Withings.NET.Specifications\bin\debug\Withings.NET.Specifications.dll" -output:coverage.xml
+
+    packages\coveralls.net.0.7.0\tools\csmacnz.Coveralls.exe --opencover  -i ./coverage.xml
+  

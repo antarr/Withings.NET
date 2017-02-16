@@ -1,6 +1,4 @@
-﻿using System;
-using System.Configuration;
-using System.Net;
+﻿using System.Net;
 using System.Runtime.CompilerServices;
 using System.Web;
 using Newtonsoft.Json;
@@ -13,7 +11,7 @@ namespace Withings.NET.Client
 {
 	public class WithingsClient
 	{
-	    const string api_root = "https://oauth.withings.com/account";
+		const string api_root = "https://oauth.withings.com/account";
 
 		static string consumerKey;
 		static string consumerSecret;
@@ -33,43 +31,36 @@ namespace Withings.NET.Client
 			callbackUrl = credentials.CallbackUrl;
 		}
 
-	    public string UserRequstUrl()
-	    {
-            string requestUrl = null;
-            try
-            {
-				client.Authenticator = OAuth1Authenticator.ForRequestToken(consumerKey, consumerSecret, callbackUrl);
-                ((OAuth1Authenticator)client.Authenticator).ParameterHandling = OAuthParameterHandling.UrlOrPostParameters;
+		public string UserRequstUrl()
+		{
+			string requestUrl = null;
+			client.Authenticator = OAuth1Authenticator.ForRequestToken(consumerKey, consumerSecret, callbackUrl);
+			((OAuth1Authenticator)client.Authenticator).ParameterHandling = OAuthParameterHandling.UrlOrPostParameters;
 
-				var request = new RestRequest("request_token", Method.GET);
-                var response = client.Execute(request);
+			var request = new RestRequest("request_token", Method.GET);
+			var response = client.Execute(request);
 
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var query = HttpUtility.ParseQueryString(response.Content);
-                    OauthToken = query["oauth_token"];
-                    OauthSecret = query["oauth_token_secret"];
+			if (response.StatusCode == HttpStatusCode.OK)
+			{
+				var query = HttpUtility.ParseQueryString(response.Content);
+				OauthToken = query["oauth_token"];
+				OauthSecret = query["oauth_token_secret"];
 
-                    request.AddParameter("oauth_token", OauthToken);
-                    requestUrl = client.BuildUri(request).ToString();
-                }
-            }
-	        catch (Exception e)
-	        {
-	            Console.WriteLine("Exception: " + JsonConvert.SerializeObject(e));
-	        }
-	        return requestUrl;
-	    }
+				request.AddParameter("oauth_token", OauthToken);
+				requestUrl = client.BuildUri(request).ToString();
+			}
+			return requestUrl;
+		}
 
-        public string AuthorizeUser()
-	    {
-	        var request = new RestRequest();
-	        client.Authenticator = OAuth1Authenticator.ForClientAuthentication(consumerKey, consumerSecret, "", "");
-	        var response = client.Execute(request);
-            if(response.StatusCode != HttpStatusCode.OK)
-                return null;
-	        var query = HttpUtility.ParseQueryString(response.Content);
-	        return JsonConvert.SerializeObject(query);
-	    }
+		public string AuthorizeUser()
+		{
+			var request = new RestRequest();
+			client.Authenticator = OAuth1Authenticator.ForClientAuthentication(consumerKey, consumerSecret, "", "");
+			var response = client.Execute(request);
+			if (response.StatusCode != HttpStatusCode.OK)
+				return null;
+			var query = HttpUtility.ParseQueryString(response.Content);
+			return JsonConvert.SerializeObject(query);
+		}
 	}
 }

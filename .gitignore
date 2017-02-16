@@ -27,7 +27,7 @@ autom4te.cache/
 tarballs/
 test-results/
 Thumbs.db
-*/app.config
+Withings.NET/Specifications/app.config
 
 # Mac bundle stuff
 *.dmg

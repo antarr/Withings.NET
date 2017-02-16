@@ -6,7 +6,7 @@
 [Bb]in/
 packages/
 TestResults/
-WithingsCredentials.ps1
+
 # globs
 Makefile.in
 *.DS_Store
@@ -27,6 +27,8 @@ autom4te.cache/
 tarballs/
 test-results/
 Thumbs.db
+*/app.config
+
 # Mac bundle stuff
 *.dmg
 *.app

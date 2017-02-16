@@ -1,0 +1,5 @@
+environment:
+  WithingsConsumerKey:
+    secure: 6f36zRSfkGxWeGwEyDfpKAcCqyvXd29yBCLNPpnirHp7DLt6AlSqS5IZI/TlKhaCUKGHmfjyWkTjwumO6Xl9yg==
+  WithingsConsumerSecret:
+    secure: qkVbHi4RLY0nv3NLjxfrFfDrQ9SlIfj4HtQKlTXkYCCC/sVa8pOhsve1Ec344/IwktSYZlSUHKLkTMETckSYcA==

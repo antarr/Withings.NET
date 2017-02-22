@@ -1,31 +1,36 @@
-﻿using System.Net;
+﻿using System;
 using System.Runtime.CompilerServices;
-using System.Web;
-using Newtonsoft.Json;
-using RestSharp;
-using RestSharp.Authenticators;
-using RestSharp.Authenticators.OAuth;
+using DevDefined.OAuth.Consumer;
+using DevDefined.OAuth.Framework;
 
 [assembly: InternalsVisibleTo("Withings.Net.Specifications")]
 namespace Withings.NET.Client
 {
 	public class WithingsClient
 	{
-		const string api_root = "https://oauth.withings.com/account";
+		#region Constants
 
-		static string consumerKey;
-		static string consumerSecret;
+		const string RequestUrl = "http://oauth.withings.com/account/request_token";
+		const string UserAuthorizeUrl = "http://oauth.withings.com/account/authorize";
+		const string AccessUrl = "http://oauth.withings.com/account/access_token";
+		const string OauthSignatureMethod = "HMAC-SHA1";
+		const string OauthVersion = "1.0";
+
+		#endregion
+		IOAuthSession _session;
+		IToken _requestToken;
+
+		readonly string consumerKey;
+		readonly string consumerSecret;
+
 		static string callbackUrl;
 
 		string OauthToken;
 		string OauthSecret;
-
-		RestClient client;
+		string UserId;
 
 		public WithingsClient(WithingsCredentials credentials)
 		{
-			client = new RestClient(api_root);
-
 			consumerKey = credentials.ConsumerKey;
 			consumerSecret = credentials.ConsumerSecret;
 			callbackUrl = credentials.CallbackUrl;
@@ -33,37 +38,55 @@ namespace Withings.NET.Client
 
 		public string UserRequstUrl()
 		{
-			string requestUrl = null;
-			client.Authenticator = OAuth1Authenticator.ForRequestToken(consumerKey, consumerSecret, callbackUrl);
-			((OAuth1Authenticator)client.Authenticator).ParameterHandling = OAuthParameterHandling.UrlOrPostParameters;
-
-			var request = new RestRequest("/request_token", Method.GET);
-			var response = client.Execute(request);
-
-			if (response.StatusCode == HttpStatusCode.OK)
-			{
-				var query = HttpUtility.ParseQueryString(response.Content);
-				OauthToken = query["oauth_token"];
-				OauthSecret = query["oauth_token_secret"];
-
-				request.AddParameter("oauth_token", OauthToken);
-				requestUrl = client.BuildUri(request).ToString();
-			}
-			request = new RestRequest(api_root);
-			request.AddParameter("oauth_token", OauthToken);
-			requestUrl = client.BuildUri(request).ToString();
-			return requestUrl;
+			InitSession();
+			_requestToken = _session.GetRequestToken();
+			return DoGetAuthUrl(_requestToken);
 		}
 
 		public string AuthorizeUser()
 		{
-			var request = new RestRequest();
-			client.Authenticator = OAuth1Authenticator.ForClientAuthentication(consumerKey, consumerSecret, "", "");
-			var response = client.Execute(request);
-			if (response.StatusCode != HttpStatusCode.OK)
-				return null;
-			var query = HttpUtility.ParseQueryString(response.Content);
-			return JsonConvert.SerializeObject(query);
+			return "";
+		}
+
+		#region Private Methods
+
+		OAuthConsumerContext CustomerContext()
+		{
+			return new OAuthConsumerContext
+			{
+				SignatureMethod = OauthSignatureMethod,
+				ConsumerKey = consumerKey,
+				ConsumerSecret = consumerSecret,
+				UseHeaderForOAuthParameters = false,
+			};
+		}
+
+		string DoGetAuthUrl(IToken requestToken)
+		{
+			int counter;
+			const int maxTries = 4;
+			string authorizationLink = null;
+			for (counter = 0; counter < maxTries; counter++)
+			{
+				authorizationLink = _session.GetUserAuthorizationUrlForToken(requestToken, callbackUrl);
+				if (string.IsNullOrEmpty(authorizationLink))
+					continue;
+				break;
+			}
+			return authorizationLink;
+		}
+
+		void InitSession()
+		{
+			_session = new OAuthSession(
+				CustomerContext(),
+				RequestUrl,
+				UserAuthorizeUrl,
+				AccessUrl)
+			{ CallbackUri = new Uri(callbackUrl) };
+
 		}
 	}
+
+	#endregion
 }

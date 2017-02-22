@@ -1,9 +1,12 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Withings.NET", "Withings.NET\Withings.NET.csproj", "{D2E459A9-C641-40A5-9124-35A4539E90EE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Withings.Net.Specifications", "Withings.Net.Specifications\Withings.Net.Specifications.csproj", "{36B91432-1E60-4403-A9CB-2122DAE13443}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Withings.NET.MVC2Example", "Withings.NET.MVC2Example\Withings.NET.MVC2Example.csproj", "{D44C5523-BE9A-4213-B499-88348BB743F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,5 +22,12 @@ Global
 		{36B91432-1E60-4403-A9CB-2122DAE13443}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36B91432-1E60-4403-A9CB-2122DAE13443}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36B91432-1E60-4403-A9CB-2122DAE13443}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D44C5523-BE9A-4213-B499-88348BB743F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D44C5523-BE9A-4213-B499-88348BB743F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D44C5523-BE9A-4213-B499-88348BB743F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D44C5523-BE9A-4213-B499-88348BB743F4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

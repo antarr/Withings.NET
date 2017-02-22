@@ -4,7 +4,7 @@ using DevDefined.OAuth.Consumer;
 using DevDefined.OAuth.Framework;
 
 [assembly: InternalsVisibleTo("Withings.Net.Specifications")]
-namespace Withings.NET.Client
+namespace Withings.NET
 {
 	public class WithingsClient
 	{
@@ -17,13 +17,14 @@ namespace Withings.NET.Client
 		const string OauthVersion = "1.0";
 
 		#endregion
+
 		IOAuthSession _session;
 		IToken _requestToken;
 
-		readonly string consumerKey;
-		readonly string consumerSecret;
+		readonly string _consumerKey;
+		readonly string _consumerSecret;
 
-		static string callbackUrl;
+		static string _callbackUrl;
 
 		string OauthToken;
 		string OauthSecret;
@@ -31,9 +32,9 @@ namespace Withings.NET.Client
 
 		public WithingsClient(WithingsCredentials credentials)
 		{
-			consumerKey = credentials.ConsumerKey;
-			consumerSecret = credentials.ConsumerSecret;
-			callbackUrl = credentials.CallbackUrl;
+			_consumerKey = credentials.ConsumerKey;
+			_consumerSecret = credentials.ConsumerSecret;
+			_callbackUrl = credentials.CallbackUrl;
 		}
 
 		public string UserRequstUrl()
@@ -55,8 +56,8 @@ namespace Withings.NET.Client
 			return new OAuthConsumerContext
 			{
 				SignatureMethod = OauthSignatureMethod,
-				ConsumerKey = consumerKey,
-				ConsumerSecret = consumerSecret,
+				ConsumerKey = _consumerKey,
+				ConsumerSecret = _consumerSecret,
 				UseHeaderForOAuthParameters = false,
 			};
 		}
@@ -68,7 +69,7 @@ namespace Withings.NET.Client
 			string authorizationLink = null;
 			for (counter = 0; counter < maxTries; counter++)
 			{
-				authorizationLink = _session.GetUserAuthorizationUrlForToken(requestToken, callbackUrl);
+				authorizationLink = _session.GetUserAuthorizationUrlForToken(requestToken, _callbackUrl);
 				if (string.IsNullOrEmpty(authorizationLink))
 					continue;
 				break;
@@ -83,7 +84,7 @@ namespace Withings.NET.Client
 				RequestUrl,
 				UserAuthorizeUrl,
 				AccessUrl)
-			{ CallbackUri = new Uri(callbackUrl) };
+			{ CallbackUri = new Uri(_callbackUrl) };
 
 		}
 	}

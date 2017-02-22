@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using Machine.Specifications;
 using Withings.NET;
 using Withings.NET.Client;
@@ -21,11 +22,9 @@ namespace When
 
         It Should_not_have_returned_a_null_url = () => RequestUrl.ShouldNotBeNull();
 
-		It Should_not_have_returned_a_empty_url = () => Subject.UserRequstUrl().ShouldBeEmpty();
+		It Should_not_have_returned_a_empty_url = () => Subject.UserRequstUrl().ShouldNotBeEmpty();
 
 		static WithingsClient Subject;
 		static string RequestUrl;
-
-
 	}
 }

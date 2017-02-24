@@ -1,5 +1,6 @@
 ﻿using System;
-namespace Withings.NET
+
+namespace Withings.NET.Client
 {
 	public class WithingsCredentials
 	{

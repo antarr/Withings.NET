@@ -2,6 +2,7 @@
 using System.Configuration;
 using Machine.Specifications;
 using Withings.NET;
+using Withings.NET.Client;
 
 namespace When
 {

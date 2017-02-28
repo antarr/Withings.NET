@@ -1,7 +1,5 @@
-﻿using System;
-using System.Configuration;
+﻿using System.Configuration;
 using Machine.Specifications;
-using Withings.NET;
 using Withings.NET.Client;
 
 namespace When
@@ -18,11 +16,11 @@ namespace When
 			Subject = new WithingsClient(credentials);
 		};
 
-		Because As_a_user_i_called_user_request_url = () =>  RequestUrl = Subject.UserRequstUrl();
+	    Because As_a_user_i_called_user_request_url = async () => RequestUrl = await Subject.UserRequstUrl("machine.specifications");
 
         It Should_not_have_returned_a_null_url = () => RequestUrl.ShouldNotBeNull();
 
-		It Should_not_have_returned_a_empty_url = () => Subject.UserRequstUrl().ShouldNotBeEmpty();
+		It Should_not_have_returned_a_empty_url = () => RequestUrl.ShouldNotBeEmpty();
 
 		static WithingsClient Subject;
 		static string RequestUrl;

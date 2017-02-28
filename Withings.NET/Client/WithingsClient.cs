@@ -7,161 +7,121 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using DevDefined.OAuth.Consumer;
 using DevDefined.OAuth.Framework;
+using Foundations.HttpClient.Enums;
+using Material.Infrastructure.Credentials;
+using Material.OAuth.Workflow;
+using Newtonsoft.Json;
 
 [assembly: InternalsVisibleTo("Withings.Net.Specifications")]
-
 namespace Withings.NET.Client
 {
     public class WithingsClient
     {
         #region Constants
 
-        const string RequestUrl = "http://oauth.withings.com/account/request_token";
-        const string UserAuthorizeUrl = "http://oauth.withings.com/account/authorize";
-        const string AccessUrl = "http://oauth.withings.com/account/access_token";
+        const string RequestUrl = "https://oauth.withings.com/account/request_token";
+        const string UserAuthorizeUrl = "https://oauth.withings.com/account/authorize";
+        const string AccessUrl = "https://oauth.withings.com/account/access_token";
         const string OauthSignatureMethod = "HMAC-SHA1";
         const string OauthVersion = "1.0";
 
         #endregion
 
-        IOAuthSession _session;
-        IToken _requestToken;
-
-        readonly string _consumerKey;
-        readonly string _consumerSecret;
-
-        static string _callbackUrl;
-
-        string OauthToken;
-        string OauthSecret;
-        string UserId;
+        readonly string ConsumerKey;
+        readonly string ConsumerSecret;
+        readonly string CallbackUrl;
 
         public WithingsClient(WithingsCredentials credentials)
         {
-            _consumerKey = credentials.ConsumerKey;
-            _consumerSecret = credentials.ConsumerSecret;
-            _callbackUrl = credentials.CallbackUrl;
+            ConsumerKey = credentials.ConsumerKey;
+            ConsumerSecret = credentials.ConsumerSecret;
+            CallbackUrl = credentials.CallbackUrl;
         }
 
-        public string UserRequstUrl()
+        /// <summary>
+        /// GET USER REQUEST URL
+        /// </summary>
+        /// <returns>string</returns>
+        public async Task<string> UserRequstUrl()
         {
-            InitSession();
-            _requestToken = _session.GetRequestToken();
-            return DoGetAuthUrl(_requestToken);
+            var uri = await GetAuthorizationUriAsync();
+            return uri.AbsoluteUri;
         }
 
-        public string AuthorizeUser()
+        /// <summary>
+        /// GET USER ACCESS TOKEN
+        /// </summary>
+        /// <param name="requestUri"></param>
+        /// <param name="userId"></param>
+        /// <returns>OAuth1Credentials</returns>
+        public async Task<OAuth1Credentials> ExchangeRequestTokenForAccessToken(Uri requestUri,string userId)
         {
-            return "";
+            OAuth1Web<Material.Infrastructure.ProtectedResources.Withings> app = WithingApp();
+            return await app.GetAccessTokenAsync(requestUri, userId);
         }
 
-        public IToken GenUserToken(IToken requestToken, string verifier, string userId)
+        public async Task<string> UserDataAccessToken(string oauthtoken, string userId)
         {
-            if (_session == null)
-                InitSession();
-
-            OauthToken = requestToken.Token;
-            UserId = userId;
-            OauthSecret = requestToken.TokenSecret;
-
-            var accessToken = _session.ExchangeRequestTokenForAccessToken(requestToken, "GET", verifier);
-            return accessToken;
-        }
-
-        public async Task<string> DoGetAccessToken(string token, string userId)
-        {
-            //objective is to get the initial token following teh 3 steps
-            //Step 1 : get a oAuth "request token"
+            ////objective is to get the initial token following teh 3 steps
+            ////Step 1 : get a oAuth "request token"
             string result = null;
-            var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString(CultureInfo.InvariantCulture)));
-
-            var timeSpan = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0);
-
-            var timestamp = Convert.ToInt64(timeSpan.TotalSeconds).ToString(CultureInfo.InvariantCulture);
+            var nonce = Nonce();
+            ////var timeSpan = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0);
+            var timestamp = DateTime.UtcNow.Epoch().ToString(); //// Convert.ToInt64(timeSpan.TotalSeconds).ToString(CultureInfo.InvariantCulture));
             var nUri = new Uri(AccessUrl);
-            var oauthSignature = GenerateSignature(nonce, timestamp, nUri, _consumerKey);
+            var oauthSignature = GenerateSignature(nonce, timestamp, nUri, ConsumerKey);
 
-            var uri = AccessUrl 
-                + "?oauth_consumer_key=" + HttpUtility.UrlEncode(_consumerKey)
-                + "&oauth_nonce=" + HttpUtility.UrlEncode(nonce)
-                + "&oauth_signature=" + HttpUtility.UrlEncode(oauthSignature)
-                + "&oauth_signature_method=" + OauthSignatureMethod
-                + "&oauth_timestamp=" + HttpUtility.UrlEncode(timestamp)
-                + "&oauth_token=" + HttpUtility.UrlEncode(token)
-                + "&oauth_version=" + OauthVersion
-                + "&userid=" + HttpUtility.UrlEncode(userId);
+            var uri = AccessUrl
+                      + "?oauth_consumer_key=" + HttpUtility.UrlEncode(ConsumerKey)
+                      + "&oauth_nonce=" + HttpUtility.UrlEncode(nonce)
+                      + "&oauth_signature=" + HttpUtility.UrlEncode(oauthSignature)
+                      + "&oauth_signature_method=HMAC-SHA1"
+                      + $"&oauth_timestamp={HttpUtility.UrlEncode(timestamp)}"
+                      + $"&oauth_token={oauthtoken}"
+                      + "&oauth_version=1.0"
+                      + $"&userid={userId}";
 
-
-            // Create an HttpClient instance 
             var client = new HttpClient();
-            // Send a request asynchronously continue when complete 
-            await client.GetAsync(uri).ContinueWith(
-                requestTask =>
-                {
-                    // Get HTTP response from completed task. 
-                    var response = requestTask.Result;
-
-                    // Check that response was successful or throw exception 
-                    // Read response asynchronously as JsonValue and write out top facts for each country 
-                    response.Content.ReadAsStringAsync().ContinueWith(readTask => result = readTask.Result);
-                });
+            await client.GetAsync(uri).ContinueWith(requestTask =>
+            {
+                var response = requestTask.Result;
+                response.Content.ReadAsStringAsync().ContinueWith(readTask => result = readTask.Result);
+            });
             return result;
         }
 
         #region Private Methods
 
-        OAuthConsumerContext CustomerContext()
+        private OAuth1Web<Material.Infrastructure.ProtectedResources.Withings> WithingApp()
+            => new OAuth1Web<Material.Infrastructure.ProtectedResources.Withings>(ConsumerKey, ConsumerSecret, CallbackUrl);
+
+        private async Task<Uri> GetAuthorizationUriAsync() => await WithingApp().GetAuthorizationUriAsync("anyuser");
+
+        private OAuth1Credentials Credentials()
         {
-            return new OAuthConsumerContext
-            {
-                SignatureMethod = OauthSignatureMethod,
-                ConsumerKey = _consumerKey,
-                ConsumerSecret = _consumerSecret,
-                UseHeaderForOAuthParameters = false
-            };
+            var credentials = new OAuth1Credentials();
+            credentials.SetConsumerProperties(ConsumerKey, ConsumerSecret);
+            credentials.SetCallbackUrl(CallbackUrl);
+            credentials.SetParameterHandling(HttpParameterType.Querystring);
+            return credentials;
         }
 
-        string DoGetAuthUrl(IToken requestToken)
-        {
-            int counter;
-            const int maxTries = 4;
-            string authorizationLink = null;
-            for (counter = 0; counter < maxTries; counter++)
-            {
-                authorizationLink = _session.GetUserAuthorizationUrlForToken(requestToken, _callbackUrl);
-                if (string.IsNullOrEmpty(authorizationLink))
-                    continue;
-                break;
-            }
-            return authorizationLink;
-        }
-
-        void InitSession()
-        {
-            _session = new OAuthSession(
-                    CustomerContext(),
-                    RequestUrl,
-                    UserAuthorizeUrl,
-                    AccessUrl)
-                {CallbackUri = new Uri(_callbackUrl)};
-        }
 
         string GenerateSignature(string nonce, string timeStamp, Uri url, string clientId)
         {
             var signatureBase = GenerateBase(nonce, timeStamp, url);
-            ////var signatureKey = $"{clientId}&{""}";
-            var signatureKey = $"{clientId}&";
+            var signatureKey = $"{clientId}&{""}";
+            ////var signatureKey = $"{clientId}&";
             var hmac = new HMACSHA1(Encoding.ASCII.GetBytes(signatureKey));
             return Convert.ToBase64String(hmac.ComputeHash(new ASCIIEncoding().GetBytes(signatureBase)));
         }
 
-        private string GenerateBase(string nonce, string timeStamp, Uri url)
+        string GenerateBase(string nonce, string timeStamp, Uri url)
         {
             var parameters = new SortedDictionary<string, string>
             {
-                {"oauth_consumer_key", _consumerKey},
+                {"oauth_consumer_key", ConsumerKey},
                 {"oauth_signature_method", OauthSignatureMethod},
                 {"oauth_timestamp", timeStamp},
                 {"oauth_nonce", nonce},
@@ -188,7 +148,9 @@ namespace Withings.NET.Client
             }
             return sb.ToString();
         }
-    }
 
-    #endregion
+        static string Nonce() => Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString(CultureInfo.InvariantCulture)));
+
+        #endregion
+    }
 }

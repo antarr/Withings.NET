@@ -1,7 +1,6 @@
 ﻿using System.Configuration;
-using System.Threading.Tasks;
+using Material.Infrastructure.Credentials;
 using Nancy;
-using Nancy.Helpers;
 using Nancy.Responses;
 using Withings.NET.Client;
 
@@ -11,23 +10,20 @@ namespace NancyExample.Modules
     {
         public IndexModule()
         {
-            var credentials = new WithingsCredentials(ConfigurationManager.AppSettings["WithingsConsumerKey"],
+            var withingsCredentials = new WithingsCredentials(ConfigurationManager.AppSettings["WithingsConsumerKey"],
                                                       ConfigurationManager.AppSettings["WithingsConsumerSecret"],
                                                       ConfigurationManager.AppSettings["WithingsCallbackUrl"]);
 
-            var client = new WithingsClient(credentials);
+            var client = new WithingsClient(withingsCredentials);
 
             Get["/"] = nothing => new RedirectResponse("api/oauth/authorize", RedirectResponse.RedirectType.Permanent);
 
-            Get["api/oauth/authorize"] = nothing => new RedirectResponse(client.UserRequstUrl());
+            Get["api/oauth/authorize", true] = async (nothing, ct) => new RedirectResponse(await client.UserRequstUrl());
 
-            Get["api/oauth/callback", true] = async (nothing, cancellationToken) =>
+            Get["api/oauth/callback", true] = async (nothing, ct) =>
             {
-                var oauthToken = Request.Query["oauth_token"].ToString();
-                var oauthVerifier = Request.Query["oauth_verifier"].ToString();
-                var userid = Request.Query["userid"].ToString();
-                var token =  await client.DoGetAccessToken(oauthToken, userid);
-                return token;
+                var credentials = await client.ExchangeRequestTokenForAccessToken(Request.Url, "anyuser");
+                return new JsonResponse<OAuth1Credentials>(credentials, new DefaultJsonSerializer());
             };
         }
     }

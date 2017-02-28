@@ -8,7 +8,11 @@ namespace Withings.NET.Client
 		internal string ConsumerKey;
 		internal string ConsumerSecret;
 
-		public WithingsCredentials(string consumerKey, string consumerSecret, string callbackUrl)
+        public string OauthToken { get; set; }
+        public string OauthTokenSecret { get; set; }
+        public string UserId { get; set; }
+
+        public WithingsCredentials(string consumerKey, string consumerSecret, string callbackUrl)
 		{
 			if (string.IsNullOrEmpty(consumerKey))
 				throw new ArgumentNullException(nameof(consumerKey));

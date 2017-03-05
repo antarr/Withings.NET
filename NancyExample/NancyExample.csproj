@@ -119,7 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Withings.NET\Withings.NET.csproj">
-      <Project>{D2E459A9-C641-40A5-9124-35A4539E90EE}</Project>
+      <Project>{d2e459a9-c641-40a5-9124-35a4539e90ee}</Project>
       <Name>Withings.NET</Name>
     </ProjectReference>
   </ItemGroup>

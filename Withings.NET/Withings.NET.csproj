@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Withings.NET</RootNamespace>
     <AssemblyName>Withings.NET</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -27,51 +27,37 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
-      <HintPath>..\packages\Portable.BouncyCastle.1.8.1\lib\net46\crypto.dll</HintPath>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
+      <HintPath>..\packages\Portable.BouncyCastle.1.8.1.2\lib\net4\BouncyCastle.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Foundations, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Quantfabric.Material.1.3.6\lib\net45\Foundations.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Quantfabric.Material.1.3.7\lib\net45\Foundations.dll</HintPath>
     </Reference>
     <Reference Include="Foundations.HttpClient, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Quantfabric.Material.1.3.6\lib\net45\Foundations.HttpClient.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Quantfabric.Material.1.3.7\lib\net45\Foundations.HttpClient.dll</HintPath>
     </Reference>
     <Reference Include="Material.Portable, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Quantfabric.Material.1.3.6\lib\net45\Material.Portable.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Quantfabric.Material.1.3.7\lib\net45\Material.Portable.dll</HintPath>
     </Reference>
     <Reference Include="Material.Windows, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Quantfabric.Material.1.3.6\lib\net45\Material.Windows.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Quantfabric.Material.1.3.7\lib\net45\Material.Windows.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.IO.FileSystem, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.FileSystem.4.0.0\lib\net46\System.IO.FileSystem.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.0.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.0.0\lib\dotnet\System.IO.FileSystem.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Net" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Configuration" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml" />
-    <Reference Include="RestSharp">
-      <HintPath>..\packages\RestSharp.105.2.3\lib\net46\RestSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="DevDefined.OAuth">
-      <HintPath>..\packages\DevDefined.OAuth.0.2\lib\DevDefined.OAuth.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -7,13 +7,13 @@ using Material.OAuth.Workflow;
 [assembly: InternalsVisibleTo("Withings.Net.Specifications")]
 namespace Withings.NET.Client
 {
-    public class WithingsClient
+    public class Authenticator
     {
         readonly string ConsumerKey;
         readonly string ConsumerSecret;
         readonly string CallbackUrl;
 
-        public WithingsClient(WithingsCredentials credentials)
+        public Authenticator(WithingsCredentials credentials)
         {
             ConsumerKey = credentials.ConsumerKey;
             ConsumerSecret = credentials.ConsumerSecret;

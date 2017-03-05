@@ -13,16 +13,16 @@ namespace When
 													  ConfigurationManager.AppSettings["WithingsConsumerSecret"],
 													  ConfigurationManager.AppSettings["WithingsCallbackUrl"]);
 
-			Subject = new WithingsClient(credentials);
+			Subject = new Authenticator(credentials);
 		};
 
-	    Because As_a_user_i_called_user_request_url = async () => RequestUrl = await Subject.UserRequstUrl("machine.specifications");
+	    Because AsAUserICalledUserRequestUrl = async () => RequestUrl = await Subject.UserRequstUrl("machine.specifications");
 
-        It Should_not_have_returned_a_null_url = () => RequestUrl.ShouldNotBeNull();
+        It ShouldNotHaveReturnedANullUrl = () => RequestUrl.ShouldNotBeNull();
 
-		It Should_not_have_returned_a_empty_url = () => RequestUrl.ShouldNotBeEmpty();
+		It ShouldNotHaveReturnedAEmptyUrl = () => RequestUrl.ShouldNotBeEmpty();
 
-		static WithingsClient Subject;
+		static Authenticator Subject;
 		static string RequestUrl;
 	}
 }

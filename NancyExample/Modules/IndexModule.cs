@@ -1,9 +1,10 @@
-﻿using System.Configuration;
+﻿﻿using System.Configuration;
 using Foundations.HttpClient.Enums;
-using Material.Infrastructure.Credentials;
+﻿using System;
+ using Material.Infrastructure.Credentials;
 using Nancy;
 using Nancy.Responses;
-using Withings.NET.Client;
+ using Withings.NET.Client;
 
 namespace NancyExample.Modules
 {
@@ -28,6 +29,12 @@ namespace NancyExample.Modules
                 var credentials = await authenticator.ExchangeRequestTokenForAccessToken(Request.Url, "nancy_user").ConfigureAwait(true);
                 return new JsonResponse<OAuth1Credentials>(credentials, new DefaultJsonSerializer());
             };
+
+            ////Get["api/withings/activity"] = nothing =>
+            ////{
+            ////    var activity = new WithingsClient(Credentials).GetActivityMeasures(DateTime.UtcNow);
+            ////    return new JsonResponse(activity, new DefaultJsonSerializer());
+            ////};
         }
     }
 }

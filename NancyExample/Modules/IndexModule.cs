@@ -21,11 +21,11 @@ namespace NancyExample.Modules
 
             Get["/"] = nothing => new RedirectResponse("api/oauth/authorize", RedirectResponse.RedirectType.Permanent);
 
-            Get["api/oauth/authorize", true] = async (nothing, ct) => new RedirectResponse(await authenticator.UserRequstUrl("nancy_user"));
+            Get["api/oauth/authorize", true] = async (nothing, ct) => new RedirectResponse(await authenticator.UserRequstUrl("nancy_user").ConfigureAwait(true));
 
             Get["api/oauth/callback", true] = async (nothing, ct) =>
             {
-                var credentials = await authenticator.ExchangeRequestTokenForAccessToken(Request.Url, "nancy_user");
+                var credentials = await authenticator.ExchangeRequestTokenForAccessToken(Request.Url, "nancy_user").ConfigureAwait(true);
                 return new JsonResponse<OAuth1Credentials>(credentials, new DefaultJsonSerializer());
             };
         }

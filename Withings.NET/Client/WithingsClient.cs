@@ -28,7 +28,7 @@ namespace Withings.NET.Client
         /// <returns>string</returns>
         public async Task<string> UserRequstUrl(string username)
         {
-            var uri = await GetAuthorizationUriAsync(username);
+            var uri = await GetAuthorizationUriAsync(username).ConfigureAwait(false);
             return uri.AbsoluteUri;
         }
 
@@ -41,7 +41,7 @@ namespace Withings.NET.Client
         public async Task<OAuth1Credentials> ExchangeRequestTokenForAccessToken(Uri requestUri, string userId)
         {
             OAuth1Web<Material.Infrastructure.ProtectedResources.Withings> app = WithingApp();
-            return await app.GetAccessTokenAsync(requestUri,userId);
+            return await app.GetAccessTokenAsync(requestUri,userId).ConfigureAwait(false);
         }
 
 
@@ -50,7 +50,7 @@ namespace Withings.NET.Client
         private OAuth1Web<Material.Infrastructure.ProtectedResources.Withings> WithingApp()
             => new OAuth1Web<Material.Infrastructure.ProtectedResources.Withings>(ConsumerKey, ConsumerSecret, CallbackUrl);
 
-        private async Task<Uri> GetAuthorizationUriAsync(string username) => await WithingApp().GetAuthorizationUriAsync(username);
+        private async Task<Uri> GetAuthorizationUriAsync(string username) => await WithingApp().GetAuthorizationUriAsync(username).ConfigureAwait(false);
 
         #endregion
     }

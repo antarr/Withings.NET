@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using Foundations.HttpClient.Enums;
 using Material.Infrastructure.Credentials;
 using Nancy;
 using Nancy.Responses;
@@ -10,11 +11,13 @@ namespace NancyExample.Modules
     {
         public IndexModule()
         {
-            var withingsCredentials = new WithingsCredentials(ConfigurationManager.AppSettings["WithingsConsumerKey"],
-                                                      ConfigurationManager.AppSettings["WithingsConsumerSecret"],
-                                                      ConfigurationManager.AppSettings["WithingsCallbackUrl"]);
+            var _credentials = new OAuth1Credentials();
+            _credentials.SetCallbackUrl(ConfigurationManager.AppSettings["WithingsCallbackUrl"]);
+            _credentials.SetConsumerProperties(ConfigurationManager.AppSettings["WithingsConsumerKey"],
+                ConfigurationManager.AppSettings["WithingsConsumerSecret"]);
+            _credentials.SetParameterHandling(HttpParameterType.Querystring);
 
-            var authenticator = new Authenticator(withingsCredentials);
+            var authenticator = new Authenticator(_credentials);
 
             Get["/"] = nothing => new RedirectResponse("api/oauth/authorize", RedirectResponse.RedirectType.Permanent);
 

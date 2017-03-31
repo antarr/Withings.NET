@@ -12,12 +12,14 @@ namespace Withings.NET.Client
         readonly string ConsumerKey;
         readonly string ConsumerSecret;
         readonly string CallbackUrl;
+        readonly OAuth1Credentials Credentials;
 
-        public Authenticator(WithingsCredentials credentials)
+        public Authenticator(OAuth1Credentials credentials)
         {
             ConsumerKey = credentials.ConsumerKey;
             ConsumerSecret = credentials.ConsumerSecret;
             CallbackUrl = credentials.CallbackUrl;
+            Credentials = credentials;
         }
 
         /// <summary>
@@ -39,7 +41,7 @@ namespace Withings.NET.Client
         public async Task<OAuth1Credentials> ExchangeRequestTokenForAccessToken(Uri requestUri, string userId)
         {
             OAuth1Web<Material.Infrastructure.ProtectedResources.Withings> app = WithingApp();
-            return await app.GetAccessTokenAsync(requestUri, userId);
+            return await app.GetAccessTokenAsync(requestUri,userId);
         }
 
 

@@ -9,15 +9,15 @@ namespace Withings.NET.Client
 {
     public class Authenticator
     {
-        readonly string _consumerKey;
-        readonly string _consumerSecret;
-        readonly string _callbackUrl;
+        readonly string ConsumerKey;
+        readonly string ConsumerSecret;
+        readonly string CallbackUrl;
 
         public Authenticator(OAuth1Credentials credentials)
         {
-            _consumerKey = credentials.ConsumerKey;
-            _consumerSecret = credentials.ConsumerSecret;
-            _callbackUrl = credentials.CallbackUrl;
+            ConsumerKey = credentials.ConsumerKey;
+            ConsumerSecret = credentials.ConsumerSecret;
+            CallbackUrl = credentials.CallbackUrl;
         }
 
         /// <summary>
@@ -38,14 +38,15 @@ namespace Withings.NET.Client
         /// <returns>OAuth1Credentials</returns>
         public async Task<OAuth1Credentials> ExchangeRequestTokenForAccessToken(Uri requestUri, string userId)
         {
-            var app = WithingApp();
-            return await app.GetAccessTokenAsync(requestUri, userId).ConfigureAwait(false);
+            OAuth1Web<Material.Infrastructure.ProtectedResources.Withings> app = WithingApp();
+            return await app.GetAccessTokenAsync(requestUri,userId).ConfigureAwait(false);
         }
+
 
         #region Private Methods
 
         private OAuth1Web<Material.Infrastructure.ProtectedResources.Withings> WithingApp()
-            => new OAuth1Web<Material.Infrastructure.ProtectedResources.Withings>(_consumerKey, _consumerSecret, _callbackUrl);
+            => new OAuth1Web<Material.Infrastructure.ProtectedResources.Withings>(ConsumerKey, ConsumerSecret, CallbackUrl);
 
         private async Task<Uri> GetAuthorizationUriAsync(string username) => await WithingApp().GetAuthorizationUriAsync(username).ConfigureAwait(false);
 

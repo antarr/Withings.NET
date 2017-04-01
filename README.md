@@ -5,3 +5,5 @@
 [![Coverage Status](https://coveralls.io/repos/github/atbyrd/Withings.NET/badge.svg?branch=master)](https://coveralls.io/github/atbyrd/Withings.NET?branch=master)
 [![codecov](https://codecov.io/gh/atbyrd/Withings.NET/branch/master/graph/badge.svg)](https://codecov.io/gh/atbyrd/Withings.NET)
 [![Documentation Status](https://readthedocs.org/projects/withingsnet/badge/?version=latest)](http://withingsnet.readthedocs.io/en/latest/?badge=latest)
+
+[![NuGet](https://img.shields.io/nuget/v/Nuget.Core.svg?style=plastic)](https://www.nuget.org/packages/Withing.NET/1.1.1)

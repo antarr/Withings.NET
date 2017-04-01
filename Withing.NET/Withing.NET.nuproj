@@ -11,31 +11,38 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>9a4cc02c-7e7c-457b-99d2-c74b482003dc</ProjectGuid>
+    <ProjectGuid>4ed9b3df-397e-40b8-8507-d46805178c3a</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup>
     <NuProjPath Condition=" '$(NuProjPath)' == '' ">$(MSBuildExtensionsPath)\NuProj\</NuProjPath>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
-    <Id>Withings.NET.Nuget</Id>
-    <Version>1.1.0</Version>
-    <Title>Withings.NET.Nuget</Title>
+    <Id>Withing.NET</Id>
+    <Version>1.1.1</Version>
+    <Title>Withings.NET</Title>
     <Authors>Antarr Byrd</Authors>
     <Owners>Antarr Byrd</Owners>
-    <Summary>Withings.NET</Summary>
-    <Description>Wrapper around the Withings Health Data api.</Description>
+    <Summary>Withing.NET</Summary>
+    <Description>Wrapper around Withing Health Data API</Description>
     <ReleaseNotes>
     </ReleaseNotes>
-    <ProjectUrl>https://github.com/atbyrd/Withings.NET</ProjectUrl>
+    <ProjectUrl>https://github.com/atbyrd/withings.net</ProjectUrl>
     <LicenseUrl>
     </LicenseUrl>
-    <Copyright>Copyright © 2017</Copyright>
-    <Tags>Withings, OAuth</Tags>
-    <EmbedSourceFiles>true</EmbedSourceFiles>
+    <Copyright>Copyright © Antarr Byrd</Copyright>
+    <Tags>Withings, OAuth, API, Health, Data</Tags>
+    <IconUrl>http://oauth.withings.com/images/favicon.ico</IconUrl>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Client\Authenticator.cs" />
+    <None Include="Client\DateTimeExtensions.cs" />
+    <None Include="Client\OAuthBase.cs" />
+    <None Include="Client\WithingsClient.cs" />
+    <None Include="Client\WithingsCredentials.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Withings.NET\Withings.csproj" />

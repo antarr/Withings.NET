@@ -1,6 +1,4 @@
-﻿using System;
-using System.Configuration;
-using System.Web.Configuration;
+﻿using System.Configuration;
 using Foundations.HttpClient.Enums;
 using Material.Infrastructure.Credentials;
 using Nancy;

@@ -89,9 +89,9 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Withings.NET\Withings.NET.csproj">
+    <ProjectReference Include="..\Withings.NET\Withings.csproj">
       <Project>{D2E459A9-C641-40A5-9124-35A4539E90EE}</Project>
-      <Name>Withings.NET</Name>
+      <Name>Withings</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

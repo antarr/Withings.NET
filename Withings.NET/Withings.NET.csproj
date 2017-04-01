@@ -55,6 +55,7 @@
       <HintPath>..\packages\RestSharp.105.2.3\lib\net45\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.FileSystem.Primitives.4.0.0\lib\dotnet\System.IO.FileSystem.Primitives.dll</HintPath>
     </Reference>
@@ -64,8 +65,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Client\DateTimeExtensions.cs" />
+    <Compile Include="Client\OAuthBase.cs" />
     <Compile Include="Client\WithingsClient.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Client\Authenticator.cs" />
     <Compile Include="Client\WithingsCredentials.cs" />
   </ItemGroup>
   <ItemGroup />

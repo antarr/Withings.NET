@@ -1,5 +1,6 @@
 ﻿using System.Configuration;
 using Machine.Specifications;
+using Material.Infrastructure.Credentials;
 using Withings.NET.Client;
 
 namespace When
@@ -7,22 +8,26 @@ namespace When
 	[Tags("Integration")]
     public class GettingRequestToken
 	{
-		Establish context = () =>
-		{
-			var credentials = new WithingsCredentials(ConfigurationManager.AppSettings["WithingsConsumerKey"],
-													  ConfigurationManager.AppSettings["WithingsConsumerSecret"],
-													  ConfigurationManager.AppSettings["WithingsCallbackUrl"]);
+	    private Establish context = () =>
+	    {
+	        var credentials = new OAuth1Credentials();
+	        credentials.SetConsumerProperties
+	        (
+	            ConfigurationManager.AppSettings["WithingsConsumerKey"],
+	            ConfigurationManager.AppSettings["WithingsConsumerSecret"]
+	        );
+	        credentials.SetCallbackUrl(ConfigurationManager.AppSettings["WithingsCallbackUrl"]);
 
-			Subject = new Authenticator(credentials);
+			_subject = new Authenticator(credentials);
 		};
 
-	    Because AsAUserICalledUserRequestUrl = async () => RequestUrl = await Subject.UserRequstUrl("machine.specifications");
+	    Because AsAUserICalledUserRequestUrl = async () => _requestUrl = await _subject.UserRequstUrl("machine.specifications").ConfigureAwait(true);
 
-        It ShouldNotHaveReturnedANullUrl = () => RequestUrl.ShouldNotBeNull();
+        It ShouldNotHaveReturnedANullUrl = () => _requestUrl.ShouldNotBeNull();
 
-		It ShouldNotHaveReturnedAEmptyUrl = () => RequestUrl.ShouldNotBeEmpty();
+		It ShouldNotHaveReturnedAEmptyUrl = () => _requestUrl.ShouldNotBeEmpty();
 
-		static Authenticator Subject;
-		static string RequestUrl;
+		static Authenticator _subject;
+		static string _requestUrl;
 	}
 }

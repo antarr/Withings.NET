@@ -50,20 +50,16 @@
     </Reference>
     <Reference Include="DevDefined.OAuth, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a3261f5b4697e67d" />
     <Reference Include="Foundations, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Quantfabric.Material.1.3.6\lib\net45\Foundations.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Quantfabric.Material.1.3.7\lib\net45\Foundations.dll</HintPath>
     </Reference>
     <Reference Include="Foundations.HttpClient, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Quantfabric.Material.1.3.6\lib\net45\Foundations.HttpClient.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Quantfabric.Material.1.3.7\lib\net45\Foundations.HttpClient.dll</HintPath>
     </Reference>
     <Reference Include="Material.Portable, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Quantfabric.Material.1.3.6\lib\net45\Material.Portable.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Quantfabric.Material.1.3.7\lib\net45\Material.Portable.dll</HintPath>
     </Reference>
     <Reference Include="Material.Windows, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Quantfabric.Material.1.3.6\lib\net45\Material.Windows.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Quantfabric.Material.1.3.7\lib\net45\Material.Windows.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Nancy, Version=1.4.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -74,6 +70,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Nancy.Hosting.Aspnet.1.4.1\lib\net40\Nancy.Hosting.Aspnet.dll</HintPath>
     </Reference>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data.DataSetExtensions" />

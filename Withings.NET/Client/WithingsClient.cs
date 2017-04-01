@@ -37,11 +37,20 @@ namespace Withings.NET.Client
             request.AddParameter("userid", userId);
             request.AddParameter("startdateymd", startDay);
             request.AddParameter("enddateymd", endDay);
+
+            var uri = $"{baseUri}measure?action=getactivity&userid={userId}&startdateymd={startDay}&enddateymd={endDay}";
+            AddOauthParameters(request, uri, token, secret);
+
+            var response = Client.Execute(request);
+            return response.Content;
+        }
+
+        void AddOauthParameters(IRestRequest request, string uri, string token, string secret)
+        {
             var oAuth = new OAuthBase();
 
             var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
             var timeStamp = oAuth.GenerateTimeStamp();
-            var uri = $"{baseUri}measure?action=getactivity&userid={userId}&startdateymd={startDay}&enddateymd={endDay}";
             string normalizedUrl;
             string parameters;
             var signature = oAuth.GenerateSignature
@@ -68,25 +77,6 @@ namespace Withings.NET.Client
             request.AddParameter("oauth_timestamp", timeStamp);
             request.AddParameter("oauth_token", token);
             request.AddParameter("oauth_version", "1.0");
-
-            var response = Client.Execute(request);
-            return response.Content;
-            //var requestUri = new StringBuilder(uri);
-            //requestUri.AppendFormat("&oauth_consumer_key={0}&", _credentials.ConsumerKey);
-            //requestUri.AppendFormat("oauth_nonce={0}&", nonce);
-            //requestUri.AppendFormat("oauth_signature={0}&", signature);
-            //requestUri.AppendFormat("oauth_signature_method={0}&", "HMAC-SHA1");
-            //requestUri.AppendFormat("oauth_timestamp={0}&", timeStamp);
-            //requestUri.AppendFormat("oauth_token={0}&", token);
-            //requestUri.AppendFormat("oauth_version={0}", "1.0");
-
-            //var wrGeturl = WebRequest.Create(requestUri.ToString());
-            //var objStream = wrGeturl.GetResponse().GetResponseStream();
-            //const string sLine = "";
-
-            //if (objStream == null) return sLine;
-            //var objReader = new StreamReader(objStream);
-            //return objReader.ReadLine();
         }
     }
 }

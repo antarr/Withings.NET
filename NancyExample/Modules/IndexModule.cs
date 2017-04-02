@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using Foundations.HttpClient.Enums;
 using Material.Infrastructure.Credentials;
 using Nancy;
@@ -64,13 +65,40 @@ namespace NancyExample.Modules
                 return new JsonResponse<string>(activity, new DefaultJsonSerializer());
             };
 
-            Get["api/withings/sleep"] = nothing =>
+            Get["api/withings/sleepsummary"] = nothing =>
             {
                 var client = new WithingsClient(_credentials);
                 var activity = client.GetSleepSummary
                 (
                     "2017-01-01",
                     "2017-03-30",
+                    ConfigurationManager.AppSettings["OAuthToken"],
+                    ConfigurationManager.AppSettings["OAuthSecret"]
+                );
+                return new JsonResponse<string>(activity, new DefaultJsonSerializer());
+            };
+
+            Get["api/withings/workouts"] = nothing =>
+            {
+                var client = new WithingsClient(_credentials);
+                var activity = client.GetWorkouts
+                (
+                    "2017-01-01",
+                    "2017-03-30",
+                    ConfigurationManager.AppSettings["OAuthToken"],
+                    ConfigurationManager.AppSettings["OAuthSecret"]
+                );
+                return new JsonResponse<string>(activity, new DefaultJsonSerializer());
+            };
+
+            Get["api/withings/sleepmeasures"] = nothing =>
+            {
+                var client = new WithingsClient(_credentials);
+                var activity = client.GetSleepMeasures
+                (
+                    ConfigurationManager.AppSettings["UserId"],
+                    DateTime.Now.AddDays(-90),
+                    DateTime.Now.AddDays(-1),
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );

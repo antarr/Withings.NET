@@ -11,6 +11,16 @@
 
 ### CHANGE LOG
 
+Version: 1.1.29 |
+Release Date:April 02, 2017 |
+New Features |
+Add Abiltity To Get Sleep Measures
+
+Version: 1.1.27 |
+Release Date:April 02, 2017 |
+New Features |
+Add Abiltity To Get Workout Data
+
 Version: 1.1.26 |
 Release Date:April 02, 2017 |
 New Features |

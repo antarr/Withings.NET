@@ -63,6 +63,19 @@ namespace NancyExample.Modules
                 );
                 return new JsonResponse<string>(activity, new DefaultJsonSerializer());
             };
+
+            Get["api/withings/sleep"] = nothing =>
+            {
+                var client = new WithingsClient(_credentials);
+                var activity = client.GetSleepSummary
+                (
+                    "2017-01-01",
+                    "2017-03-30",
+                    ConfigurationManager.AppSettings["OAuthToken"],
+                    ConfigurationManager.AppSettings["OAuthSecret"]
+                );
+                return new JsonResponse<string>(activity, new DefaultJsonSerializer());
+            };
         }
     }
 }

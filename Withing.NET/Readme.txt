@@ -1,5 +1,10 @@
 ﻿Withings.NET
 
+Version: 1.1.26
+Release Date:April 01, 2017 
+New Features
+Add Abiltity To Get Sleep Summary Over A Range Of Days
+
 Version: 1.1.23
 Release Date:April 01, 2017 
 New Features

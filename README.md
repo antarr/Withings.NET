@@ -8,12 +8,21 @@
 
 [![NuGet](https://img.shields.io/nuget/v/Nuget.Core.svg?style=plastic)](https://www.nuget.org/packages/Withing.NET/1.1.1)
 
-### USAGE
+## USAGE
 Due to external dependencies, your callback url should include a username param i.e. http://localhost:49294/api/oauth/callback/{username} 
 
+## CHANGE
 
-### CHANGE LOG
+### All examples will use the Nancy Framework
 
+#### Authorization - Getting user authorization url
+```
+Get["api/oauth/authorize", true] = async (nothing, ct) => 
+{
+   var url = await authenticator.UserRequstUrl("nancy_user").ConfigureAwait(true);
+   new JsonRespons(url, new DefaultJsonSerializer());
+}
+```
 Version: 1.1.29 |
 Release Date:April 02, 2017 |
 New Features |

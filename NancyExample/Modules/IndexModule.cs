@@ -42,8 +42,21 @@ namespace NancyExample.Modules
                 var client = new WithingsClient(_credentials);
                 var activity = client.GetActivityMeasures
                 (
-                    "2017-03-01",
+                    "2017-01-01",
                     "2017-03-30",
+                    ConfigurationManager.AppSettings["UserId"],
+                    ConfigurationManager.AppSettings["OAuthToken"],
+                    ConfigurationManager.AppSettings["OAuthSecret"]
+                );
+                return new JsonResponse<string>(activity, new DefaultJsonSerializer());
+            };
+
+            Get["api/withings/dailyactivity"] = nothing =>
+            {
+                var client = new WithingsClient(_credentials);
+                var activity = client.GetActivityMeasures
+                (
+                    "2017-03-01",
                     ConfigurationManager.AppSettings["UserId"],
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]

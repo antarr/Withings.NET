@@ -94,6 +94,10 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Withings.NET, Version=1.1.6301.27087, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Withing.NET.1.1.29\lib\net45\Withings.NET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\nancy-logo.png" />
@@ -120,12 +124,6 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Withings.NET\Withings.csproj">
-      <Project>{d2e459a9-c641-40a5-9124-35a4539e90ee}</Project>
-      <Name>Withings</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

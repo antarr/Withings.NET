@@ -19,7 +19,6 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
     <Id>Withing.NET</Id>
-    <Version>1.1.16</Version>
     <Title>Withings.NET</Title>
     <Authors>Antarr Byrd</Authors>
     <Owners>Antarr Byrd</Owners>
@@ -33,6 +32,7 @@
     <Copyright>Copyright © Antarr Byrd</Copyright>
     <Tags>Withings, OAuth, API, Health, Data</Tags>
     <IconUrl>http://oauth.withings.com/images/favicon.ico</IconUrl>
+    <Version>1.1.23</Version>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />

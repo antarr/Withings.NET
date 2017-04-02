@@ -19,7 +19,7 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
     <Id>Withing.NET</Id>
-    <Version>1.1.1</Version>
+    <Version>1.1.16</Version>
     <Title>Withings.NET</Title>
     <Authors>Antarr Byrd</Authors>
     <Owners>Antarr Byrd</Owners>
@@ -36,13 +36,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Client\Authenticator.cs" />
-    <None Include="Client\DateTimeExtensions.cs" />
-    <None Include="Client\OAuthBase.cs" />
-    <None Include="Client\WithingsClient.cs" />
-    <None Include="Client\WithingsCredentials.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Withings.NET\Withings.csproj" />

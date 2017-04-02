@@ -6,6 +6,7 @@ using RestSharp.Extensions.MonoHttp;
 using System;
 using System.Text;
 
+
 namespace Withings.NET.Client
 {
     public class WithingsClient

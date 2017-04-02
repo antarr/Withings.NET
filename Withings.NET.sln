@@ -8,8 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Withings.Net.Specifications
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NancyExample", "NancyExample\NancyExample.csproj", "{ED638DD5-E755-4B7A-940D-5C94AB425686}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{FFD5908B-92E6-4997-AB83-9DA497EAE021}"
-EndProject
+
 Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "Withing.NET", "Withing.NET\Withing.NET.nuproj", "{4ED9B3DF-397E-40B8-8507-D46805178C3A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{762B0907-2F7B-47F7-8B1C-DF5886B7EDF4}"

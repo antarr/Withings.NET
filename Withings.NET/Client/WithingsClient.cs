@@ -61,22 +61,6 @@ namespace Withings.NET.Client
 
             var response = Client.Execute<WithingsWeighInResponse>(request);
             return response.Data;
-            ////var requestUri = new StringBuilder(uri);
-            ////requestUri.AppendFormat("&oauth_consumer_key={0}&", _credentials.ConsumerKey);
-            ////requestUri.AppendFormat("oauth_nonce={0}&", nonce);
-            ////requestUri.AppendFormat("oauth_signature={0}&", signature);
-            ////requestUri.AppendFormat("oauth_signature_method={0}&", "HMAC-SHA1");
-            ////requestUri.AppendFormat("oauth_timestamp={0}&", timeStamp);
-            ////requestUri.AppendFormat("oauth_token={0}&", token);
-            ////requestUri.AppendFormat("oauth_version={0}", "1.0");
-
-            ////var wrGeturl = WebRequest.Create(requestUri.ToString());
-            ////var objStream = wrGeturl.GetResponse().GetResponseStream();
-            ////const string sLine = "";
-
-            ////if (objStream == null) return sLine;
-            ////var objReader = new StreamReader(objStream);
-            ////return objReader.ReadLine();
         }
 
         public WithingsWeighInResponse GetActivityMeasures(DateTime lastUpdate, string userId, string token, string secret)

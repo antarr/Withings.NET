@@ -15,11 +15,11 @@ namespace Withings.NET.Client
     {
         internal RestClient Client;
         readonly OAuth1Credentials _credentials;
-        string baseUri = "https://wbsapi.withings.net/v2";
+        private const string BaseUri = "https://wbsapi.withings.net/v2";
 
         public WithingsClient(OAuth1Credentials credentials)
         {
-            Client = new RestClient(baseUri)
+            Client = new RestClient(BaseUri)
             {
                 Authenticator = OAuth1Authenticator.ForProtectedResource
                 (

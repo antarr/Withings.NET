@@ -1,7 +1,12 @@
 ﻿Withings.NET
 
+Version: 2.0.0
+Release Date: April 03, 2017
+Breaking API Change
+GetActivityMeasures Now Accepts DateTimes Instead of Strings for Dates
+
 Version: 1.1.29
-Release Date:April 02, 2017
+Release Date: April 02, 2017
 New Features
 Add Abiltity To Get Sleep Measures
 

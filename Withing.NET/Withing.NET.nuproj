@@ -32,7 +32,7 @@
     <Copyright>Copyright © Antarr Byrd</Copyright>
     <Tags>Withings, OAuth, API, Health, Data</Tags>
     <IconUrl>http://oauth.withings.com/images/favicon.ico</IconUrl>
-    <Version>1.1.29</Version>
+    <Version>2.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />

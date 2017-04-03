@@ -2,6 +2,7 @@
 using System.Configuration;
 using Foundations.HttpClient.Enums;
 using Material.Infrastructure.Credentials;
+using Material.Infrastructure.Responses;
 using Nancy;
 using Nancy.Responses;
 using Withings.NET.Client;
@@ -43,13 +44,13 @@ namespace NancyExample.Modules
                 var client = new WithingsClient(_credentials);
                 var activity = client.GetActivityMeasures
                 (
-                    "2017-01-01",
-                    "2017-03-30",
+                    DateTime.Parse("2017-01-01"),
+                    DateTime.Parse("2017-03-30"),
                     ConfigurationManager.AppSettings["UserId"],
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse<string>(activity, new DefaultJsonSerializer());
+                return new JsonResponse<WithingsWeighInResponse>(activity, new DefaultJsonSerializer());
             };
 
             Get["api/withings/dailyactivity"] = nothing =>
@@ -57,12 +58,12 @@ namespace NancyExample.Modules
                 var client = new WithingsClient(_credentials);
                 var activity = client.GetActivityMeasures
                 (
-                    "2017-03-01",
+                    DateTime.Today.AddDays(-30),
                     ConfigurationManager.AppSettings["UserId"],
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse<string>(activity, new DefaultJsonSerializer());
+                return new JsonResponse<WithingsWeighInResponse>(activity, new DefaultJsonSerializer());
             };
 
             Get["api/withings/sleepsummary"] = nothing =>

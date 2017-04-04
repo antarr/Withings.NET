@@ -61,7 +61,7 @@ namespace Withings.NET.Client
                 .AddQueryParameter("oauth_signature_method", "HMAC-SHA1")
                 .AddQueryParameter("oauth_version", "1.0");
 
-            var response = Client.Execute<WithingsWeighInResponse>(request);
+            IRestResponse<WithingsWeighInResponse> response = Client.Execute<WithingsWeighInResponse>(request);
             return response.Data;
         }
 
@@ -90,7 +90,7 @@ namespace Withings.NET.Client
                 .AddQueryParameter("oauth_signature_method", "HMAC-SHA1")
                 .AddQueryParameter("oauth_version", "1.0");
 
-            var response = Client.Execute<WithingsWeighInResponse>(request);
+            IRestResponse<WithingsWeighInResponse> response = Client.Execute<WithingsWeighInResponse>(request);
             return response.Data;
         }
 
@@ -129,7 +129,6 @@ namespace Withings.NET.Client
             if (objStream == null) return sLine;
             var objReader = new StreamReader(objStream);
             return objReader.ReadLine();
-
         }
 
         public string GetSleepMeasures(string userid, DateTime startday, DateTime endday, string token, string secret)
@@ -162,7 +161,6 @@ namespace Withings.NET.Client
             if (objStream == null) return sLine;
             var objReader = new StreamReader(objStream);
             return objReader.ReadLine();
-
         }
 
         #endregion
@@ -199,14 +197,43 @@ namespace Withings.NET.Client
             if (objStream == null) return sLine;
             var objReader = new StreamReader(objStream);
             return objReader.ReadLine();
-
         }
 
         #endregion
 
         #region Get Intraday Activity
 
+        public string GetIntraDayActivity(string userId, DateTime start, DateTime end, string token, string secret)
+        {
+            var oAuth = new OAuthBase();
+            var request = new RestRequest("measure", Method.GET);
+            var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
+            var timeStamp = oAuth.GenerateTimeStamp();
+            var uri = $"https://wbsapi.withings.net/v2/measure?action=getintradayactivity&userid={userId}&startdate={start.ToUnixTime()}&enddate={end.ToUnixTime()}";
+            string normalizedUrl;
+            string parameters;
+            var signature = oAuth.GenerateSignature(new Uri(uri), _credentials.ConsumerKey, _credentials.ConsumerSecret,
+                token, secret, "GET", timeStamp, nonce,
+                OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out parameters);
 
+            signature = HttpUtility.UrlEncode(signature);
+
+            request
+                .AddQueryParameter("action", "getintradayactivity")
+                .AddQueryParameter("userid", userId)
+                .AddQueryParameter("startdate", start.ToUnixTime().ToString())
+                .AddQueryParameter("enddate", end.ToUnixTime().ToString())
+                .AddQueryParameter("oauth_consumer_key", _credentials.ConsumerKey)
+                .AddQueryParameter("oauth_nonce", nonce)
+                .AddQueryParameter("oauth_signature", signature)
+                .AddQueryParameter("oauth_timestamp", timeStamp)
+                .AddQueryParameter("oauth_token", token)
+                .AddQueryParameter("oauth_signature_method", "HMAC-SHA1")
+                .AddQueryParameter("oauth_version", "1.0");
+
+            IRestResponse response = Client.Execute(request);
+            return response.Content;
+        }
 
         #endregion
 
@@ -237,7 +264,7 @@ namespace Withings.NET.Client
                 .AddQueryParameter("oauth_signature_method", "HMAC-SHA1")
                 .AddQueryParameter("oauth_version", "1.0");
 
-            var response = Client.Execute<WithingsBody>(request);
+            IRestResponse<WithingsBody> response = Client.Execute<WithingsBody>(request);
             return response.Data;
         }
 
@@ -265,7 +292,7 @@ namespace Withings.NET.Client
                 .AddQueryParameter("oauth_signature_method", "HMAC-SHA1")
                 .AddQueryParameter("oauth_version", "1.0");
 
-            var response = Client.Execute<WithingsBody>(request);
+            IRestResponse<WithingsBody> response = Client.Execute<WithingsBody>(request);
             return response.Data;
         }
 

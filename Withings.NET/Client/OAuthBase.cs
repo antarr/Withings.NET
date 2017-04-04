@@ -44,14 +44,7 @@ namespace Withings.NET.Client
 
             #region IComparer<QueryParameter> Members
 
-            public int Compare(QueryParameter x, QueryParameter y)
-            {
-                if (x?.Name == y?.Name)
-                {
-                    return CompareOrdinal(x?.Value, y?.Value);
-                }
-                return CompareOrdinal(x?.Name, y.Name);
-            }
+            public int Compare(QueryParameter x, QueryParameter y) => x?.Name == y?.Name ? CompareOrdinal(x?.Value, y?.Value) : CompareOrdinal(x?.Name, y.Name);
 
             #endregion
         }
@@ -84,14 +77,10 @@ namespace Withings.NET.Client
         private string ComputeHash(HashAlgorithm hashAlgorithm, string data)
         {
             if (hashAlgorithm == null)
-            {
                 throw new ArgumentNullException(nameof(hashAlgorithm));
-            }
 
             if (IsNullOrEmpty(data))
-            {
                 throw new ArgumentNullException(nameof(data));
-            }
 
             byte[] dataBuffer = Encoding.ASCII.GetBytes(data);
             byte[] hashBytes = hashAlgorithm.ComputeHash(dataBuffer);
@@ -107,16 +96,12 @@ namespace Withings.NET.Client
         private List<QueryParameter> GetQueryParameters(string parameters)
         {
             if (parameters.StartsWith("?"))
-            {
                 parameters = parameters.Remove(0, 1);
-            }
-
-            List<QueryParameter> result = new List<QueryParameter>();
-
+            var result = new List<QueryParameter>();
             if (!IsNullOrEmpty(parameters))
             {
                 string[] p = parameters.Split('&');
-                foreach (string s in p)
+                foreach (var s in p)
                 {
                     if (!IsNullOrEmpty(s) && !s.StartsWith(OAuthParameterPrefix))
                     {
@@ -132,7 +117,6 @@ namespace Withings.NET.Client
                     }
                 }
             }
-
             return result;
         }
 
@@ -144,20 +128,14 @@ namespace Withings.NET.Client
         /// <returns>Returns a Url encoded string</returns>
         protected string UrlEncode(string value)
         {
-            StringBuilder result = new StringBuilder();
-
-            foreach (char symbol in value)
+            var result = new StringBuilder();
+            foreach (var symbol in value)
             {
                 if (UnreservedChars.IndexOf(symbol) != -1)
-                {
                     result.Append(symbol);
-                }
                 else
-                {
                     result.Append('%' + $"{(int) symbol:X2}");
-                }
             }
-
             return result.ToString();
         }
 
@@ -168,18 +146,15 @@ namespace Withings.NET.Client
         /// <returns>a string representing the normalized parameters</returns>
         protected string NormalizeRequestParameters(IList<QueryParameter> parameters)
         {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < parameters.Count; i++)
+            var sb = new StringBuilder();
+            for (var i = 0; i < parameters.Count; i++)
             {
                 var p = parameters[i];
                 sb.AppendFormat("{0}={1}", p.Name, p.Value);
 
                 if (i < parameters.Count - 1)
-                {
                     sb.Append("&");
-                }
             }
-
             return sb.ToString();
         }
 
@@ -200,23 +175,15 @@ namespace Withings.NET.Client
         public string GenerateSignatureBase(Uri url, string consumerKey, string token, string tokenSecret, string httpMethod, string timeStamp, string nonce, string signatureType, out string normalizedUrl, out string normalizedRequestParameters)
         {
             if (token == null)
-            {
                 token = Empty;
-            }
             if (IsNullOrEmpty(consumerKey))
-            {
                 throw new ArgumentNullException(nameof(consumerKey));
-            }
             if (IsNullOrEmpty(httpMethod))
-            {
                 throw new ArgumentNullException(nameof(httpMethod));
-            }
             if (IsNullOrEmpty(signatureType))
-            {
                 throw new ArgumentNullException(nameof(signatureType));
-            }
 
-            var parameters = GetQueryParameters(url.Query);
+            List<QueryParameter> parameters = GetQueryParameters(url.Query);
             parameters.Add(new QueryParameter(OAuthVersionKey, OAuthVersion));
             parameters.Add(new QueryParameter(OAuthNonceKey, nonce));
             parameters.Add(new QueryParameter(OAuthTimestampKey, timeStamp));
@@ -224,25 +191,20 @@ namespace Withings.NET.Client
             parameters.Add(new QueryParameter(OAuthConsumerKeyKey, consumerKey));
 
             if (!IsNullOrEmpty(token))
-            {
                 parameters.Add(new QueryParameter(OAuthTokenKey, token));
-            }
 
             parameters.Sort(new QueryParameterComparer());
 
             normalizedUrl = $"{url.Scheme}://{url.Host}";
-            if (!((url.Scheme == "http" && url.Port == 80) || (url.Scheme == "https" && url.Port == 443)))
-            {
+            if (!(url.Scheme == "http" && url.Port == 80 || url.Scheme == "https" && url.Port == 443))
                 normalizedUrl += ":" + url.Port;
-            }
             normalizedUrl += url.AbsolutePath;
             normalizedRequestParameters = NormalizeRequestParameters(parameters);
 
-            StringBuilder signatureBase = new StringBuilder();
+            var signatureBase = new StringBuilder();
             signatureBase.AppendFormat("{0}&", httpMethod.ToUpper());
             signatureBase.AppendFormat("{0}&", UrlEncode(normalizedUrl));
             signatureBase.AppendFormat("{0}", UrlEncode(normalizedRequestParameters));
-
             return signatureBase.ToString();
         }
 
@@ -252,10 +214,7 @@ namespace Withings.NET.Client
         /// <param name="signatureBase">The signature based as produced by the GenerateSignatureBase method or by any other means</param>
         /// <param name="hash">The hash algorithm used to perform the hashing. If the hashing algorithm requires initialization or a key it should be set prior to calling this method</param>
         /// <returns>A base64 string of the hash value</returns>
-        public string GenerateSignatureUsingHash(string signatureBase, HashAlgorithm hash)
-        {
-            return ComputeHash(hash, signatureBase);
-        }
+        public string GenerateSignatureUsingHash(string signatureBase, HashAlgorithm hash) => ComputeHash(hash, signatureBase);
 
         /// <summary>
         /// Generates a signature using the HMAC-SHA1 algorithm
@@ -271,10 +230,7 @@ namespace Withings.NET.Client
         /// <param name="normalizedUrl"></param>
         /// <param name="normalizedRequestParameters"></param>
         /// <returns>A base64 string of the hash value</returns>
-        public string GenerateSignature(Uri url, string consumerKey, string consumerSecret, string token, string tokenSecret, string httpMethod, string timeStamp, string nonce, out string normalizedUrl, out string normalizedRequestParameters)
-        {
-            return GenerateSignature(url, consumerKey, consumerSecret, token, tokenSecret, httpMethod, timeStamp, nonce, SignatureTypes.HMACSHA1, out normalizedUrl, out normalizedRequestParameters);
-        }
+        public string GenerateSignature(Uri url, string consumerKey, string consumerSecret, string token, string tokenSecret, string httpMethod, string timeStamp, string nonce, out string normalizedUrl, out string normalizedRequestParameters) => GenerateSignature(url, consumerKey, consumerSecret, token, tokenSecret, httpMethod, timeStamp, nonce, SignatureTypes.HMACSHA1, out normalizedUrl, out normalizedRequestParameters);
 
         /// <summary>
         /// Generates a signature using the specified signatureType 
@@ -295,7 +251,6 @@ namespace Withings.NET.Client
         {
             normalizedUrl = null;
             normalizedRequestParameters = null;
-
             switch (signatureType)
             {
                 case SignatureTypes.PLAINTEXT:
@@ -324,7 +279,7 @@ namespace Withings.NET.Client
         public virtual string GenerateTimeStamp()
         {
             // Default implementation of UNIX time of the current UTC time
-            TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
             return Convert.ToInt64(ts.TotalSeconds).ToString();
         }
 
@@ -332,19 +287,6 @@ namespace Withings.NET.Client
         /// Generate a nonce
         /// </summary>
         /// <returns></returns>
-
-
-
-        //public virtual string GenerateNonce() {
-        //    // Just a simple implementation of a random number between 123400 and 9999999
-        //    return random.Next(123400, 9999999).ToString();            
-        //}
-
-        public virtual string GenerateNonce()
-        {
-            // Just a simple implementation of a random number between 123400 and 9999999
-            return Random.Next(123400, 9999999).ToString();
-        }
-
+        public virtual string GenerateNonce() => Random.Next(123400, 9999999).ToString();
     }
 }

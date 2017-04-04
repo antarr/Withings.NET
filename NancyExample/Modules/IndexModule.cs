@@ -5,6 +5,7 @@ using Material.Infrastructure.Credentials;
 using Material.Infrastructure.Responses;
 using Nancy;
 using Nancy.Responses;
+using Newtonsoft.Json;
 using Withings.NET.Client;
 
 namespace NancyExample.Modules
@@ -76,7 +77,7 @@ namespace NancyExample.Modules
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse<string>(activity, new DefaultJsonSerializer());
+                return new JsonResponse(JsonConvert.SerializeObject(activity), new DefaultJsonSerializer());
             };
 
             Get["api/withings/workouts"] = nothing =>
@@ -89,7 +90,7 @@ namespace NancyExample.Modules
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse<string>(activity, new DefaultJsonSerializer());
+                return new JsonResponse(JsonConvert.SerializeObject(activity), new DefaultJsonSerializer());
             };
 
             Get["api/withings/sleepmeasures"] = nothing =>
@@ -103,7 +104,7 @@ namespace NancyExample.Modules
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse<string>(activity, new DefaultJsonSerializer());
+                return new JsonResponse(JsonConvert.SerializeObject(activity), new DefaultJsonSerializer());
             };
 
             Get["api/withings/body"] = nothing =>
@@ -131,6 +132,20 @@ namespace NancyExample.Modules
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
                 return new JsonResponse<WithingsBody>(activity, new DefaultJsonSerializer());
+            };
+
+            Get["api/withings/intraday"] = nothing =>
+            {
+                var client = new WithingsClient(_credentials);
+                var activity = client.GetIntraDayActivity
+                (
+                    ConfigurationManager.AppSettings["UserId"],
+                    DateTime.Parse("2017-01-01"),
+                    DateTime.Parse("2017-03-30"),
+                    ConfigurationManager.AppSettings["OAuthToken"],
+                    ConfigurationManager.AppSettings["OAuthSecret"]
+                );
+                return new JsonResponse<object>(JsonConvert.SerializeObject(activity), new DefaultJsonSerializer());
             };
         }
     }

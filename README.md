@@ -24,6 +24,11 @@ Get["api/oauth/authorize", true] = async (nothing, ct) =>
 
 ## CHANGE LOG
 
+Version: 2.1.0 |
+Release Date: April 03, 2017 |
+New Features |
+Get Ability To Get Body Measures
+
 Version: 2.0.0 |
 Release Date: April 03, 2017 |
 Breaking API Change |

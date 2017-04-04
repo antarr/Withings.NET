@@ -105,6 +105,33 @@ namespace NancyExample.Modules
                 );
                 return new JsonResponse<string>(activity, new DefaultJsonSerializer());
             };
+
+            Get["api/withings/body"] = nothing =>
+            {
+                var client = new WithingsClient(_credentials);
+                var activity = client.GetBodyMeasures
+                (
+                    ConfigurationManager.AppSettings["UserId"],
+                    DateTime.Now.AddDays(-90),
+                    DateTime.Now.AddDays(-1),
+                    ConfigurationManager.AppSettings["OAuthToken"],
+                    ConfigurationManager.AppSettings["OAuthSecret"]
+                );
+                return new JsonResponse<WithingsBody>(activity, new DefaultJsonSerializer());
+            };
+
+            Get["api/withings/bodysince"] = nothing =>
+            {
+                var client = new WithingsClient(_credentials);
+                var activity = client.GetBodyMeasures
+                (
+                    ConfigurationManager.AppSettings["UserId"],
+                    DateTime.Now.AddDays(-90),
+                    ConfigurationManager.AppSettings["OAuthToken"],
+                    ConfigurationManager.AppSettings["OAuthSecret"]
+                );
+                return new JsonResponse<WithingsBody>(activity, new DefaultJsonSerializer());
+            };
         }
     }
 }

@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{762B09
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Specs", "Specs", "{6A236188-BE65-4754-87B9-4CDA9E0A028D}"
 EndProject
-Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "Withings.NET.Nuget", "Withings.NET.Nuget\Withings.NET.Nuget.nuproj", "{9A4CC02C-7E7C-457B-99D2-C74B482003DC}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "Withings.NET", "Withings.NET.Nuget\Withings.NET.nuproj", "{9A4CC02C-7E7C-457B-99D2-C74B482003DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

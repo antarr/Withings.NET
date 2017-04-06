@@ -293,5 +293,6 @@ namespace Withings.NET.Client
         }
 
         #endregion
+
     }
 }

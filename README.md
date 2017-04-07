@@ -17,7 +17,7 @@ Due to external dependencies, your callback url should include a username param 
 ```
 Get["api/oauth/authorize", true] = async (nothing, ct) => 
 {
-   var url = await authenticator.UserRequstUrl("nancy_user").ConfigureAwait(true);
+   var url = await authenticator.UserRequstUrl(requestToken).ConfigureAwait(true);
    new JsonRespons(url, new DefaultJsonSerializer());
 }
 ```

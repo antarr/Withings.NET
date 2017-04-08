@@ -3,8 +3,9 @@ using System.Configuration;
 using AsyncOAuth;
 using Foundations.HttpClient.Enums;
 using Material.Infrastructure.Credentials;
-using Material.Infrastructure.Responses;
 using Nancy;
+using Material.Infrastructure.Responses;
+
 using Nancy.Helpers;
 using Nancy.Responses;
 using Newtonsoft.Json;

@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using AsyncOAuth;
 using Machine.Specifications;
 using Material.Infrastructure.Credentials;
 using Withings.NET.Client;
@@ -18,16 +19,22 @@ namespace When
 	        );
 	        credentials.SetCallbackUrl(ConfigurationManager.AppSettings["WithingsCallbackUrl"]);
 
-			_subject = new Authenticator(credentials);
-		};
+			subject = new Authenticator(credentials);
+	        requestToken = subject.GetRequestToken().Result;
+        };
 
-	    Because AsAUserICalledUserRequestUrl = async () => _requestUrl = await _subject.UserRequstUrl("machine.specifications").ConfigureAwait(true);
+	    It ShouldHaveAKey = () => requestToken.Key.ShouldNotBeEmpty();
 
-        It ShouldNotHaveReturnedANullUrl = () => _requestUrl.ShouldNotBeNull();
+	    It ShouldHaveASecret = () => requestToken.Secret.ShouldNotBeEmpty();
 
-		It ShouldNotHaveReturnedAEmptyUrl = () => _requestUrl.ShouldNotBeEmpty();
+	    Because AsAUserICalledUserRequestUrl = () => requestUrl = subject.UserRequestUrl(requestToken);
 
-		static Authenticator _subject;
-		static string _requestUrl;
+        It ShouldNotHaveReturnedANullUrl = () => requestUrl.ShouldNotBeNull();
+
+		It ShouldNotHaveReturnedAEmptyUrl = () => requestUrl.ShouldNotBeEmpty();
+
+		static Authenticator subject;
+		static string requestUrl;
+	    static RequestToken requestToken;
 	}
 }

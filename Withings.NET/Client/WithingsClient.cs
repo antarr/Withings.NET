@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using Material.Infrastructure.Responses;
+using Newtonsoft.Json;
 
 namespace Withings.NET.Client
 {
@@ -75,7 +76,7 @@ namespace Withings.NET.Client
 
         #region Get Sleep Measures/Summary
 
-        public string GetSleepSummary(string startday, string endday, string token, string secret)
+        public object GetSleepSummary(string startday, string endday, string token, string secret)
         {
             var oAuth = new OAuthBase();
 
@@ -105,10 +106,10 @@ namespace Withings.NET.Client
 
             if (objStream == null) return sLine;
             var objReader = new StreamReader(objStream);
-            return objReader.ReadLine();
+            return JsonConvert.DeserializeObject(objReader.ReadLine());
         }
 
-        public string GetSleepMeasures(string userid, DateTime startday, DateTime endday, string token, string secret)
+        public object GetSleepMeasures(string userid, DateTime startday, DateTime endday, string token, string secret)
         {
             var oAuth = new OAuthBase();
             var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
@@ -137,50 +138,45 @@ namespace Withings.NET.Client
 
             if (objStream == null) return sLine;
             var objReader = new StreamReader(objStream);
-            return objReader.ReadLine();
+            return JsonConvert.DeserializeObject(objReader.ReadLine());
         }
 
         #endregion
 
         #region Get Workouts
 
-        public string GetWorkouts(string startday, string endday, string token, string secret)
+        public object GetWorkouts(DateTime startday, DateTime endday, string token, string secret)
         {
             var oAuth = new OAuthBase();
             var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
             var timeStamp = oAuth.GenerateTimeStamp();
-            var uri = $"https://wbsapi.withings.net/v2/measure?action=getworkouts&startdateymd={startday}&enddateymd={endday}";
+            var uri = $"https://wbsapi.withings.net/v2/measure?action=getworkouts&startdateymd={startday:yyyy-MM-dd}&enddateymd={endday.ToString("yyyy-MM-dd")}";
             string normalizedUrl;
             string parameters;
             var signature = oAuth.GenerateSignature(new Uri(uri), _credentials.ConsumerKey, _credentials.ConsumerSecret,
                 token, secret, "GET", timeStamp, nonce,
                 OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out parameters);
-
-            signature = HttpUtility.UrlEncode(signature);
-
-            var requestUri = new StringBuilder(uri);
-            requestUri.AppendFormat("&oauth_consumer_key={0}&", _credentials.ConsumerKey);
-            requestUri.AppendFormat("oauth_nonce={0}&", nonce);
-            requestUri.AppendFormat("oauth_signature={0}&", signature);
-            requestUri.AppendFormat("oauth_signature_method={0}&", "HMAC-SHA1");
-            requestUri.AppendFormat("oauth_timestamp={0}&", timeStamp);
-            requestUri.AppendFormat("oauth_token={0}&", token);
-            requestUri.AppendFormat("oauth_version={0}", "1.0");
-
-            var wrGeturl = WebRequest.Create(requestUri.ToString());
-            var objStream = wrGeturl.GetResponse().GetResponseStream();
-            const string sLine = "";
-
-            if (objStream == null) return sLine;
-            var objReader = new StreamReader(objStream);
-            return objReader.ReadLine();
+            var request = new RestRequest("measure", Method.GET);
+            request
+                .AddQueryParameter("action", "getworkouts")
+                .AddQueryParameter("startdateymd", startday.ToString("yyyy-MM-dd"))
+                .AddQueryParameter("enddateymd", endday.ToString("yyyy-MM-dd"))
+                .AddQueryParameter("oauth_consumer_key", _credentials.ConsumerKey)
+                .AddQueryParameter("oauth_nonce", nonce)
+                .AddQueryParameter("oauth_signature", signature)
+                .AddQueryParameter("oauth_timestamp", timeStamp)
+                .AddQueryParameter("oauth_token", token)
+                .AddQueryParameter("oauth_signature_method", "HMAC-SHA1")
+                .AddQueryParameter("oauth_version", "1.0");
+            var response = Client.Execute(request);
+            return JsonConvert.DeserializeObject(response.Content);
         }
 
         #endregion
 
         #region Get Intraday Activity
 
-        public string GetIntraDayActivity(string userId, DateTime start, DateTime end, string token, string secret)
+        public object GetIntraDayActivity(string userId, DateTime start, DateTime end, string token, string secret)
         {
             var oAuth = new OAuthBase();
             var request = new RestRequest("measure", Method.GET);
@@ -257,8 +253,8 @@ namespace Withings.NET.Client
 
     #endregion
 
-      void AddOAuthParameters(IRestRequest request, string nonce, string timeStamp, string signature, string token)
-      {
+    void AddOAuthParameters(IRestRequest request, string nonce, string timeStamp, string signature, string token)
+    {
           request
             .AddQueryParameter("oauth_consumer_key", _credentials.ConsumerKey)
             .AddQueryParameter("oauth_nonce", nonce)

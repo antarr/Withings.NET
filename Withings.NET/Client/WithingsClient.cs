@@ -1,7 +1,5 @@
 ﻿using Material.Infrastructure.Credentials;
 using RestSharp;
-using RestSharp.Authenticators;
-using RestSharp.Authenticators.OAuth;
 using RestSharp.Extensions.MonoHttp;
 using System;
 using System.IO;
@@ -19,17 +17,7 @@ namespace Withings.NET.Client
 
         public WithingsClient(OAuth1Credentials credentials)
         {
-            Client = new RestClient(BaseUri)
-            {
-                Authenticator = OAuth1Authenticator.ForProtectedResource
-                (
-                    credentials.ConsumerKey,
-                    credentials.ConsumerSecret,
-                    credentials.OAuthToken,
-                    credentials.OAuthSecret
-                )
-            };
-            ((OAuth1Authenticator)Client.Authenticator).ParameterHandling = OAuthParameterHandling.UrlOrPostParameters;
+          Client = new RestClient(BaseUri);
             _credentials = credentials;
         }
 
@@ -48,20 +36,14 @@ namespace Withings.NET.Client
                 token, secret, "GET", timeStamp, nonce,
                 OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out parameters);
 
-            request
-                .AddQueryParameter("action", "getactivity")
-                .AddQueryParameter("userid", userId)
-                .AddQueryParameter("startdateymd", startDay.ToString("yyyy-MM-dd"))
-                .AddQueryParameter("enddateymd", startDay.ToString("yyyy-MM-dd"))
-                .AddQueryParameter("oauth_consumer_key", _credentials.ConsumerKey)
-                .AddQueryParameter("oauth_nonce", nonce)
-                .AddQueryParameter("oauth_signature", signature)
-                .AddQueryParameter("oauth_timestamp", timeStamp)
-                .AddQueryParameter("oauth_token", token)
-                .AddQueryParameter("oauth_signature_method", "HMAC-SHA1")
-                .AddQueryParameter("oauth_version", "1.0");
+          request
+            .AddQueryParameter("action", "getactivity")
+            .AddQueryParameter("userid", userId)
+            .AddQueryParameter("startdateymd", startDay.ToString("yyyy-MM-dd"))
+            .AddQueryParameter("enddateymd", startDay.ToString("yyyy-MM-dd"));
+          AddOAuthParameters(request, nonce, timeStamp, signature, token);
 
-            IRestResponse<WithingsWeighInResponse> response = Client.Execute<WithingsWeighInResponse>(request);
+      IRestResponse<WithingsWeighInResponse> response = Client.Execute<WithingsWeighInResponse>(request);
             return response.Data;
         }
 
@@ -78,19 +60,14 @@ namespace Withings.NET.Client
             var signature = oAuth.GenerateSignature(new Uri(uri), _credentials.ConsumerKey, _credentials.ConsumerSecret,
                 token, secret, "GET", timeStamp, nonce,
                 OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out parameters);
-            request
-                .AddQueryParameter("action", "getactivity")
-                .AddQueryParameter("userid", userId)
-                .AddQueryParameter("date", lastUpdate.ToString("yyyy-MM-dd"))
-                .AddQueryParameter("oauth_consumer_key", _credentials.ConsumerKey)
-                .AddQueryParameter("oauth_nonce", nonce)
-                .AddQueryParameter("oauth_signature", signature)
-                .AddQueryParameter("oauth_timestamp",timeStamp)
-                .AddQueryParameter("oauth_token", token)
-                .AddQueryParameter("oauth_signature_method", "HMAC-SHA1")
-                .AddQueryParameter("oauth_version", "1.0");
+          request
+            .AddQueryParameter("action", "getactivity")
+            .AddQueryParameter("userid", userId)
+            .AddQueryParameter("date", lastUpdate.ToString("yyyy-MM-dd"));
+          AddOAuthParameters(request, nonce, timeStamp, signature, token);
 
-            IRestResponse<WithingsWeighInResponse> response = Client.Execute<WithingsWeighInResponse>(request);
+
+      IRestResponse<WithingsWeighInResponse> response = Client.Execute<WithingsWeighInResponse>(request);
             return response.Data;
         }
 
@@ -219,19 +196,13 @@ namespace Withings.NET.Client
             signature = HttpUtility.UrlEncode(signature);
 
             request
-                .AddQueryParameter("action", "getintradayactivity")
-                .AddQueryParameter("userid", userId)
-                .AddQueryParameter("startdate", start.ToUnixTime().ToString())
-                .AddQueryParameter("enddate", end.ToUnixTime().ToString())
-                .AddQueryParameter("oauth_consumer_key", _credentials.ConsumerKey)
-                .AddQueryParameter("oauth_nonce", nonce)
-                .AddQueryParameter("oauth_signature", signature)
-                .AddQueryParameter("oauth_timestamp", timeStamp)
-                .AddQueryParameter("oauth_token", token)
-                .AddQueryParameter("oauth_signature_method", "HMAC-SHA1")
-                .AddQueryParameter("oauth_version", "1.0");
+              .AddQueryParameter("action", "getintradayactivity")
+              .AddQueryParameter("userid", userId)
+              .AddQueryParameter("startdate", start.ToUnixTime().ToString())
+              .AddQueryParameter("enddate", end.ToUnixTime().ToString());
+             AddOAuthParameters(request, nonce, timeStamp, signature, token);
 
-            IRestResponse response = Client.Execute(request);
+            var response = Client.Execute(request);
             return response.Content;
         }
 
@@ -252,17 +223,11 @@ namespace Withings.NET.Client
                 OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out parameters);
             var request = new RestRequest("measure", Method.GET);
             request
-                .AddQueryParameter("action", "getactivity")
-                .AddQueryParameter("userid", userid)
-                .AddQueryParameter("startdate", start.ToUnixTime().ToString())
-                .AddQueryParameter("enddate", end.ToUnixTime().ToString())
-                .AddQueryParameter("oauth_consumer_key", _credentials.ConsumerKey)
-                .AddQueryParameter("oauth_nonce", nonce)
-                .AddQueryParameter("oauth_signature", signature)
-                .AddQueryParameter("oauth_timestamp", timeStamp)
-                .AddQueryParameter("oauth_token", token)
-                .AddQueryParameter("oauth_signature_method", "HMAC-SHA1")
-                .AddQueryParameter("oauth_version", "1.0");
+              .AddQueryParameter("action", "getactivity")
+              .AddQueryParameter("userid", userid)
+              .AddQueryParameter("startdate", start.ToUnixTime().ToString())
+              .AddQueryParameter("enddate", end.ToUnixTime().ToString());
+            AddOAuthParameters(request, nonce, timeStamp, signature, token);
 
             IRestResponse<WithingsBody> response = Client.Execute<WithingsBody>(request);
             return response.Data;
@@ -280,22 +245,28 @@ namespace Withings.NET.Client
                 token, secret, "GET", timeStamp, nonce,
                 OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out parameters);
             var request = new RestRequest("measure", Method.GET);
-            request
-                .AddQueryParameter("action", "getactivity")
-                .AddQueryParameter("userid", userid)
-                .AddQueryParameter("lastupdate", lastupdate.ToUnixTime().ToString())
-                .AddQueryParameter("oauth_consumer_key", _credentials.ConsumerKey)
-                .AddQueryParameter("oauth_nonce", nonce)
-                .AddQueryParameter("oauth_signature", signature)
-                .AddQueryParameter("oauth_timestamp", timeStamp)
-                .AddQueryParameter("oauth_token", token)
-                .AddQueryParameter("oauth_signature_method", "HMAC-SHA1")
-                .AddQueryParameter("oauth_version", "1.0");
+          request
+            .AddQueryParameter("action", "getactivity")
+            .AddQueryParameter("userid", userid)
+            .AddQueryParameter("lastupdate", lastupdate.ToUnixTime().ToString());
+          AddOAuthParameters(request, nonce, timeStamp, signature, token);
 
             IRestResponse<WithingsBody> response = Client.Execute<WithingsBody>(request);
             return response.Data;
         }
 
-        #endregion
+    #endregion
+
+      void AddOAuthParameters(IRestRequest request, string nonce, string timeStamp, string signature, string token)
+      {
+          request
+            .AddQueryParameter("oauth_consumer_key", _credentials.ConsumerKey)
+            .AddQueryParameter("oauth_nonce", nonce)
+            .AddQueryParameter("oauth_signature", signature)
+            .AddQueryParameter("oauth_timestamp", timeStamp)
+            .AddQueryParameter("oauth_token", token)
+            .AddQueryParameter("oauth_signature_method", "HMAC-SHA1")
+            .AddQueryParameter("oauth_version", "1.0");
     }
+  }
 }

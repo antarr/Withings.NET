@@ -54,7 +54,7 @@ namespace Withings.NET.Client
     public async Task<AccessToken> ExchangeRequestTokenForAccessToken(RequestToken requestToken, string oAuthVerifier)
     {
       var authorizer = new OAuthAuthorizer(_consumerKey, _consumerSecret);
-      var accessTokenResponse = await authorizer.GetAccessToken("https://oauth.withings.com/account/access_token", requestToken, oAuthVerifier);
+      TokenResponse<AccessToken> accessTokenResponse = await authorizer.GetAccessToken("https://oauth.withings.com/account/access_token", requestToken, oAuthVerifier);
       return accessTokenResponse.Token;
     }
 

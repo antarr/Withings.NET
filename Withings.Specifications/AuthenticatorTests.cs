@@ -51,7 +51,7 @@ namespace Withings.Specifications
             Assert.Throws<AggregateException>(InvalidExchangeRequestForAccessToken);
         }
 
-        void InvalidExchangeRequestForAccessToken()
+        private void InvalidExchangeRequestForAccessToken()
         {
             var unused = _authenticator.ExchangeRequestTokenForAccessToken(_requestToken, _requestToken.Secret).Result;
         }

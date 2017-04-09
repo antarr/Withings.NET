@@ -28,7 +28,7 @@ namespace NancyExample.Modules
 
       Get["api/oauth/authorize", true] = async (nothing, ct) =>
       {
-        var requestToken = await authenticator.GetRequestToken(_credentials.CallbackUrl);
+        var requestToken = await authenticator.GetRequestToken();
         ConfigurationManager.AppSettings["RequestToken"] = JsonConvert.SerializeObject(requestToken);
         return new RedirectResponse(authenticator.UserRequestUrl(requestToken));
       };
@@ -140,7 +140,7 @@ namespace NancyExample.Modules
 
       Get["api/oauth/requesttoken", true] = async (nothing, ct) =>
       {
-        var token = await authenticator.GetRequestToken(ConfigurationManager.AppSettings["WithingsCallbackUrl"]);
+        var token = await authenticator.GetRequestToken();
         return new JsonResponse<RequestToken>(token, new DefaultJsonSerializer());
       };
     }

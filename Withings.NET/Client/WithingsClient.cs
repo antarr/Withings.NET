@@ -29,7 +29,7 @@ namespace Withings.NET.Client
       var request = new RestRequest("measure", Method.GET);
       var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
       var timeStamp = oAuth.GenerateTimeStamp();
-      var uri = $"https://wbsapi.withings.net/v2/measure?action=getactivity&userid={userId}&startdateymd={startDay:yyyy-MM-dd}&enddateymd={endDay:yyyy-MM-dd}";
+      var uri = $"{BaseUri}/measure?action=getactivity&userid={userId}&startdateymd={startDay:yyyy-MM-dd}&enddateymd={endDay:yyyy-MM-dd}";
       string normalizedUrl;
       string parameters;
       var signature = oAuth.GenerateSignature(new Uri(uri), _credentials.ConsumerKey, _credentials.ConsumerSecret,
@@ -51,7 +51,7 @@ namespace Withings.NET.Client
     {
       var oAuth = new OAuthBase();
       var request = new RestRequest("measure", Method.GET);
-      var uri = $"https://wbsapi.withings.net/v2/measure?action=getactivity&userid={userId}&date={lastUpdate:yyyy-MM-dd}";
+      var uri = $"{BaseUri}/measure?action=getactivity&userid={userId}&date={lastUpdate:yyyy-MM-dd}";
 
       var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
       var timeStamp = oAuth.GenerateTimeStamp();
@@ -81,7 +81,7 @@ namespace Withings.NET.Client
 
       var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
       var timeStamp = oAuth.GenerateTimeStamp();
-      var uri = $"https://wbsapi.withings.net/v2/sleep?action=getsummary&startdateymd={startday}&enddateymd={endday}";
+      var uri = $"{BaseUri}/sleep?action=getsummary&startdateymd={startday}&enddateymd={endday}";
       string normalizedUrl;
       string parameters;
       var signature = oAuth.GenerateSignature(new Uri(uri), _credentials.ConsumerKey, _credentials.ConsumerSecret,
@@ -113,7 +113,7 @@ namespace Withings.NET.Client
       var oAuth = new OAuthBase();
       var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
       var timeStamp = oAuth.GenerateTimeStamp();
-      var uri = $"https://wbsapi.withings.net/v2/sleep?action=get&userid={userid}&startdate={startday.ToUnixTime()}&enddate={endday.ToUnixTime()}";
+      var uri = $"{BaseUri}/v2/sleep?action=get&userid={userid}&startdate={startday.ToUnixTime()}&enddate={endday.ToUnixTime()}";
       string normalizedUrl;
       string parameters;
       var signature = oAuth.GenerateSignature(new Uri(uri), _credentials.ConsumerKey, _credentials.ConsumerSecret,
@@ -149,7 +149,7 @@ namespace Withings.NET.Client
       var oAuth = new OAuthBase();
       var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
       var timeStamp = oAuth.GenerateTimeStamp();
-      var uri = $"https://wbsapi.withings.net/v2/measure?action=getworkouts&startdateymd={startday}&enddateymd={endday}";
+      var uri = $"{BaseUri}/v2/measure?action=getworkouts&startdateymd={startday}&enddateymd={endday}";
       string normalizedUrl;
       string parameters;
       var signature = oAuth.GenerateSignature(new Uri(uri), _credentials.ConsumerKey, _credentials.ConsumerSecret,
@@ -186,7 +186,7 @@ namespace Withings.NET.Client
       var request = new RestRequest("measure", Method.GET);
       var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
       var timeStamp = oAuth.GenerateTimeStamp();
-      var uri = $"https://wbsapi.withings.net/v2/measure?action=getintradayactivity&userid={userId}&startdate={start.ToUnixTime()}&enddate={end.ToUnixTime()}";
+      var uri = $"{BaseUri}/v2/measure?action=getintradayactivity&userid={userId}&startdate={start.ToUnixTime()}&enddate={end.ToUnixTime()}";
       string normalizedUrl;
       string parameters;
       var signature = oAuth.GenerateSignature(new Uri(uri), _credentials.ConsumerKey, _credentials.ConsumerSecret,
@@ -215,7 +215,7 @@ namespace Withings.NET.Client
       var oAuth = new OAuthBase();
       var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
       var timeStamp = oAuth.GenerateTimeStamp();
-      var uri = $"https://wbsapi.withings.net/measure?action=getmeas&userid=29&startdate={start.ToUnixTime()}&enddate={end.ToUnixTime()}";
+      var uri = $"{BaseUri}/measure?action=getmeas&userid=29&startdate={start.ToUnixTime()}&enddate={end.ToUnixTime()}";
       string normalizedUrl;
       string parameters;
       var signature = oAuth.GenerateSignature(new Uri(uri), _credentials.ConsumerKey, _credentials.ConsumerSecret,

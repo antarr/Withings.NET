@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AsyncOAuth;
+using FluentAssertions;
 using NUnit.Framework;
 using Withings.NET.Client;
 
@@ -25,18 +26,15 @@ namespace Withings.Specifications
         [Test]
         public void RequestTokenTest()
         {
-            Assert.IsNotEmpty(_requestToken.Key);
-            Assert.IsNotNull(_requestToken.Key);
-            Assert.IsNotEmpty(_requestToken.Secret);
-            Assert.IsNotNull(_requestToken.Secret);
+            _requestToken.Key.Should().NotBeNullOrEmpty();
+            _requestToken.Secret.Should().NotBeNullOrEmpty();
         }
 
         [Test]
         public void AuthorizeUrlTest()
         {
             var url = _authenticator.UserRequestUrl(_requestToken);
-            Assert.IsNotNull(url);
-            Assert.IsNotEmpty(url);
+            url.Should().NotBeNullOrEmpty();
         }
 
         [Test]

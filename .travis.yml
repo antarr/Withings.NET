@@ -2,5 +2,9 @@ language: csharp
 solution: Withings.NET.sln
 install:
   - sudo apt-get install -y gtk-sharp2
+  - sudo apt-get install nunit-console
   - nuget restore Withings.NET.sln
-  - nuget install NUnit.Runners -OutputDirectory testrunner
+
+script:
+  - xbuild Withings.NET.sln
+  - nunit-console ./Withings.Specifications/bin/Debug/Withings.Specifications.dll

@@ -1,0 +1,6 @@
+language: csharp
+solution: Withings.NET.sln
+install:
+  - sudo apt-get install -y gtk-sharp2
+  - nuget restore solution-name.sln
+  - nuget install NUnit.Runners -OutputDirectory testrunner

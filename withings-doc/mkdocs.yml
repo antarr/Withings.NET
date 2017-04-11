@@ -1,0 +1,5 @@
+site_name: Withings.NET Documentation
+site_description: Documentation for the Withing.NET Nuget packages. 
+theme: readthedocs
+pages:
+- ['index.md', 'Index']

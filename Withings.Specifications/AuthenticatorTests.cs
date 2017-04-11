@@ -11,7 +11,7 @@ namespace Withings.Specifications
     public class AuthenticatorTests
     {
         Authenticator _authenticator;
-        WithingsCredentials _credentials = new WithingsCredentials();
+        WithingsCredentials _credentials;
         private RequestToken _requestToken;
         [SetUp]
         public async Task Init()

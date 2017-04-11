@@ -29,7 +29,7 @@ namespace Withings.Specifications
         [Test]
         public void DateTimeToUnixTimeTest()
         {
-            DateTime.Parse("04/11/2017").Should().Equals(1491934309);
+            DateTime.Parse("04/11/2017").ToUnixTime().Should().Equals(1491934309);
         }
     }
 }

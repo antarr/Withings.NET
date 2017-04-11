@@ -6,7 +6,7 @@
 [![codecov](https://codecov.io/gh/atbyrd/Withings.NET/branch/master/graph/badge.svg)](https://codecov.io/gh/atbyrd/Withings.NET)
 [![Documentation Status](https://readthedocs.org/projects/withingsnet/badge/?version=latest)](http://withingsnet.readthedocs.io/en/latest/?badge=latest)
 
-[![NuGet](https://img.shields.io/nuget/v/Nuget.Core.svg?style=plastic)](https://www.nuget.org/packages/Withing.NET)
+[![NuGet](https://img.shields.io/nuget/v/Nuget.Core.svg?style=plastic)](https://www.nuget.org/packages/Withings.NET)
 
 ## USAGE
 Due to external dependencies, your callback url should include a username param i.e. http://localhost:49294/api/oauth/callback/{username} 
@@ -17,7 +17,7 @@ Due to external dependencies, your callback url should include a username param 
 ```
 Get["api/oauth/authorize", true] = async (nothing, ct) => 
 {
-   var url = await authenticator.UserRequstUrl("nancy_user").ConfigureAwait(true);
+   var url = await authenticator.UserRequstUrl(requestToken).ConfigureAwait(true);
    new JsonRespons(url, new DefaultJsonSerializer());
 }
 ```

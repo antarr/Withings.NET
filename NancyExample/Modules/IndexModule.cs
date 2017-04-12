@@ -20,7 +20,7 @@ namespace NancyExample.Modules
             _credentials.SetCallbackUrl(ConfigurationManager.AppSettings["WithingsCallbackUrl"]);
             _credentials.SetConsumerProperties(ConfigurationManager.AppSettings["WithingsConsumerKey"],
                 ConfigurationManager.AppSettings["WithingsConsumerSecret"]);
-            _credentials.SetParameterHandling(HttpParameterType.Querystring);
+            _credentials.SetParameterHandling(OAuthParameterTypeEnum.Querystring);
 
             var authenticator = new Authenticator(_credentials);
 

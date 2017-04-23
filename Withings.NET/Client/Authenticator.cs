@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using AsyncOAuth;
-using Material.Infrastructure.Credentials;
+using Withings.NET.Models;
 
 [assembly: InternalsVisibleTo("Withings.Net.Specifications")]
 namespace Withings.NET.Client
@@ -15,7 +15,7 @@ namespace Withings.NET.Client
         readonly string _consumerSecret;
         readonly string _callbackUrl;
 
-        public Authenticator(OAuth1Credentials credentials)
+        public Authenticator(WithingsCredentials credentials)
         {
           _consumerKey = credentials.ConsumerKey;
           _consumerSecret = credentials.ConsumerSecret;

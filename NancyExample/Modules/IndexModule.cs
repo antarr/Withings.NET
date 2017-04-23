@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Configuration;
 using AsyncOAuth;
-using Foundations.HttpClient.Enums;
-using Material.Infrastructure.Credentials;
-using Material.Infrastructure.Responses;
 using Nancy;
 using Nancy.Helpers;
 using Nancy.Responses;
 using Newtonsoft.Json;
 using Withings.NET.Client;
+using Withings.NET.Models;
 
 namespace NancyExample.Modules
 {
@@ -16,11 +14,10 @@ namespace NancyExample.Modules
     {
         public IndexModule()
         {
-            var _credentials = new OAuth1Credentials();
+            var _credentials = new WithingsCredentials();
             _credentials.SetCallbackUrl(ConfigurationManager.AppSettings["WithingsCallbackUrl"]);
             _credentials.SetConsumerProperties(ConfigurationManager.AppSettings["WithingsConsumerKey"],
                 ConfigurationManager.AppSettings["WithingsConsumerSecret"]);
-            _credentials.SetParameterHandling(OAuthParameterTypeEnum.Querystring);
 
             var authenticator = new Authenticator(_credentials);
 

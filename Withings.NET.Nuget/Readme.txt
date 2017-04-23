@@ -1,5 +1,9 @@
 ﻿Withings.NET
 
+Version: 3.2.1
+Release Date: April 19, 2017
+Remove Dependency on Quantfabric
+
 Version: 3.0.0
 Release Date: April 05, 2017
 Breaking Changes to API

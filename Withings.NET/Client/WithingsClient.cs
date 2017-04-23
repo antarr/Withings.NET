@@ -1,22 +1,21 @@
-﻿using Material.Infrastructure.Credentials;
-using RestSharp;
+﻿using RestSharp;
 using RestSharp.Extensions.MonoHttp;
 using System;
 using System.IO;
 using System.Net;
 using System.Text;
-using Material.Infrastructure.Responses;
 using Newtonsoft.Json;
+using Withings.NET.Models;
 
 namespace Withings.NET.Client
 {
     public class WithingsClient
     {
         internal RestClient Client;
-        readonly OAuth1Credentials _credentials;
-        private const string BaseUri = "https://wbsapi.withings.net/v2";
+        readonly WithingsCredentials _credentials;
+        const string BaseUri = "https://wbsapi.withings.net/v2";
 
-        public WithingsClient(OAuth1Credentials credentials)
+        public WithingsClient(WithingsCredentials credentials)
         {
             Client = new RestClient(BaseUri);
             _credentials = credentials;

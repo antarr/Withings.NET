@@ -20,7 +20,7 @@ namespace Withings.Specifications
         {
             _credentials = new WithingsCredentials();
             _credentials.SetCallbackUrl("http://localhost:56617/api/oauth/callback");
-            _credentials.SetConsumerProperties("fb97731ef7cc787067ff5912d13663520e9428038044d198ded8d3009c52", "36b51e76c54f49558de84756c1c613b9ec450011b6481e6424dfe905bcb3c6");
+            _credentials.SetConsumerProperties("", "");
             _authenticator = new Authenticator(_credentials);
             _requestToken = await _authenticator.GetRequestToken();
          }

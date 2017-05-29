@@ -114,12 +114,12 @@ namespace NancyExample.Modules
                 var activity = client.GetBodyMeasures
                 (
                     ConfigurationManager.AppSettings["UserId"],
-                    DateTime.Now.AddDays(-90),
-                    DateTime.Now.AddDays(-1),
+                    DateTime.Parse("2017-05-08"),
+                    DateTime.Parse("2017-05-10"),
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse<WithingsBody>(activity, new DefaultJsonSerializer());
+                return new JsonResponse<object>(activity, new DefaultJsonSerializer());
             };
 
             Get["api/withings/bodysince"] = nothing =>
@@ -128,11 +128,11 @@ namespace NancyExample.Modules
                 var activity = client.GetBodyMeasures
                 (
                     ConfigurationManager.AppSettings["UserId"],
-                    DateTime.Now.AddDays(-90),
+                    DateTime.Parse("2017-05-08"),
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse<WithingsBody>(activity, new DefaultJsonSerializer());
+                return new JsonResponse<WithingsWeighInResponse>(activity, new DefaultJsonSerializer());
             };
 
             Get["api/withings/intraday"] = nothing =>

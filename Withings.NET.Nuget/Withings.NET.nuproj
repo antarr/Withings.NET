@@ -19,7 +19,7 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
     <Id>Withings.NET</Id>
-    <Version>3.2.1</Version>
+    <Version>3.2.2</Version>
     <Title>Withings.NET</Title>
     <Authors>Antarr Byrd</Authors>
     <Owners>Antarr Byrd</Owners>

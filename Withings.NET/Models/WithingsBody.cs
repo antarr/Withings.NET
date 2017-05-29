@@ -3,14 +3,10 @@ using System.Runtime.Serialization;
 
 namespace Withings.NET.Models
 {
-  [DataContract]
   public class WithingsBody
   {
-    [DataMember(Name = "measuregrps")]
-    public IList<Measuregrp> Measuregrps { get; set; }
-    [DataMember(Name = "timezone")]
-    public string Timezone { get; set; }
-    [DataMember(Name = "updatetime")]
-    public int Updatetime { get; set; }
+    public IList<Measuregrp> measuregrps { get; set; }
+    public string timezone { get; set; }
+    public string updatetime { get; set; }
   }
 }

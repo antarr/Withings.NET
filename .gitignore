@@ -6,6 +6,7 @@
 [Bb]in/
 packages/
 TestResults/
+Withings.Specifications/app.config
 
 # globs
 Makefile.in

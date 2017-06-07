@@ -155,9 +155,12 @@ namespace Withings.NET.Client
             var oAuth = new OAuthBase();
             var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
             var timeStamp = oAuth.GenerateTimeStamp();
-            var signature = oAuth.GenerateSignature(new Uri(query), _credentials.ConsumerKey, _credentials.ConsumerSecret,
+          string normalizedUrl;
+          string parameters;
+      var signature = oAuth.GenerateSignature(new Uri(query), _credentials.ConsumerKey, _credentials.ConsumerSecret,
             token, secret, "GET", timeStamp, nonce,
-            OAuthBase.SignatureTypes.HMACSHA1, out string normalizedUrl, out string parameters);
+            
+      OAuthBase.SignatureTypes.HMACSHA1, out  normalizedUrl, out parameters);
             query.SetQueryParam("oauth_consumer_key", _credentials.ConsumerKey);
             query.SetQueryParam("oauth_nonce", nonce);
             query.SetQueryParam("oauth_signature", signature);

@@ -81,13 +81,13 @@ namespace NancyExample.Modules
                 return new JsonResponse(activity, new DefaultJsonSerializer());
             };
 
-            Get["api/withings/workouts"] = nothing =>
+            Get["api/withings/workouts", true] = async (nothing, ctx) =>
             {
                 var client = new WithingsClient(_credentials);
-                var activity = client.GetWorkouts
+                var activity = await client.GetWorkouts
                 (
-                    "2017-01-01",
-                    "2017-03-30",
+                    "2017-06-01",
+                    "2017-06-05",
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );

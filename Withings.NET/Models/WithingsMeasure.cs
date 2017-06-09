@@ -1,5 +1,3 @@
-using System.Runtime.Serialization;
-
 namespace Withings.NET.Models
 {
   public class WithingsMeasure

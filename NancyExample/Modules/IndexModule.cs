@@ -41,31 +41,31 @@ namespace NancyExample.Modules
                 return new JsonResponse(credentials, new DefaultJsonSerializer());
             };
 
-            Get["api/withings/activity"] = nothing =>
-            {
-                var client = new WithingsClient(_credentials);
-                var activity = client.GetActivityMeasures
-                (
-                    DateTime.Parse("2017-01-01"),
-                    DateTime.Parse("2017-03-30"),
-                    ConfigurationManager.AppSettings["UserId"],
-                    ConfigurationManager.AppSettings["OAuthToken"],
-                    ConfigurationManager.AppSettings["OAuthSecret"]
-                );
-                return new JsonResponse<WithingsWeighInResponse>(activity, new DefaultJsonSerializer());
-            };
+      Get["api/withings/activity", true] = async (nothing, ctx) =>
+      {
+        var client = new WithingsClient(_credentials);
+        var activity = await client.GetActivityMeasures
+              (
+                  DateTime.Parse("2017-01-01"),
+                  DateTime.Parse("2017-03-30"),
+                  ConfigurationManager.AppSettings["UserId"],
+                  ConfigurationManager.AppSettings["OAuthToken"],
+                  ConfigurationManager.AppSettings["OAuthSecret"]
+              );
+        return new JsonResponse(activity, new DefaultJsonSerializer());
+      };
 
-            Get["api/withings/dailyactivity"] = nothing =>
+      Get["api/withings/dailyactivity", true] = async (nothing,ctx) =>
             {
                 var client = new WithingsClient(_credentials);
-                var activity = client.GetActivityMeasures
+                var activity = await client.GetActivityMeasures
                 (
                     DateTime.Today.AddDays(-30),
                     ConfigurationManager.AppSettings["UserId"],
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse<WithingsWeighInResponse>(activity, new DefaultJsonSerializer());
+                return new JsonResponse(activity, new DefaultJsonSerializer());
             };
 
             Get["api/withings/sleepsummary"] = nothing =>
@@ -91,7 +91,7 @@ namespace NancyExample.Modules
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse(JsonConvert.SerializeObject(activity), new DefaultJsonSerializer());
+                return new JsonResponse(activity, new DefaultJsonSerializer());
             };
 
             Get["api/withings/sleepmeasures"] = nothing =>

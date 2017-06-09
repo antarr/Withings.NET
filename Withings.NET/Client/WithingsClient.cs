@@ -159,95 +159,87 @@ namespace Withings.NET.Client
 
     #region Get Intraday Activity
 
-    public object GetIntraDayActivity(string userId, DateTime start, DateTime end, string token, string secret)
+    public async Task<ExpandoObject> GetIntraDayActivity(string userId, DateTime start, DateTime end, string token, string secret)
     {
+      var query = BaseUri.AppendPathSegment("measure")
+        .SetQueryParam("action", "getintradayactivity")
+        .SetQueryParam("userid", userId)
+        .SetQueryParam("startdate", start.ToUnixTime())
+        .SetQueryParam("enddate", end.ToUnixTime());
       var oAuth = new OAuthBase();
-      var request = new RestRequest("measure", Method.GET);
       var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
       var timeStamp = oAuth.GenerateTimeStamp();
-      var uri =
-        $"{BaseUri}/measure?action=getintradayactivity&userid={userId}&startdate={start.ToUnixTime()}&enddate={end.ToUnixTime()}";
       string normalizedUrl;
       string parameters;
-      var signature = oAuth.GenerateSignature(new Uri(uri), _credentials.ConsumerKey, _credentials.ConsumerSecret,
+      var signature = oAuth.GenerateSignature(new Uri(query), _credentials.ConsumerKey, _credentials.ConsumerSecret,
         token, secret, "GET", timeStamp, nonce,
         OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out parameters);
+      query.SetQueryParam("oauth_consumer_key", _credentials.ConsumerKey);
+      query.SetQueryParam("oauth_nonce", nonce);
+      query.SetQueryParam("oauth_signature", signature);
+      query.SetQueryParam("oauth_signature_method", "HMAC-SHA1");
+      query.SetQueryParam("oauth_timestamp", timeStamp);
+      query.SetQueryParam("oauth_token", token);
+      query.SetQueryParam("oauth_version", "1.0");
 
-      request
-        .AddQueryParameter("action", "getintradayactivity")
-        .AddQueryParameter("userid", userId)
-        .AddQueryParameter("startdate", start.ToUnixTime().ToString())
-        .AddQueryParameter("enddate", end.ToUnixTime().ToString());
-      AddOAuthParameters(request, nonce, timeStamp, signature, token);
-
-      var response = Client.Execute(request);
-      return JsonConvert.SerializeObject(response.Content);
+      return await query.GetJsonAsync().ConfigureAwait(false);
     }
 
     #endregion
 
     #region Get Body Measures
 
-    public object GetBodyMeasures(string userid, DateTime start, DateTime end, string token, string secret)
+    public async Task<ExpandoObject> GetBodyMeasures(string userid, DateTime start, DateTime end, string token, string secret)
     {
-      var client = new RestClient("https://wbsapi.withings.net");
+      var query = "https://wbsapi.withings.net".AppendPathSegment("measure")
+        .SetQueryParam("action", "getmeas")
+        .SetQueryParam("userid", userid)
+        .SetQueryParam("startdate", start.ToUnixTime())
+        .SetQueryParam("enddate", end.ToUnixTime());
       var oAuth = new OAuthBase();
       var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
       var timeStamp = oAuth.GenerateTimeStamp();
-      var uri =
-        $"https://wbsapi.withings.net/measure?action=getmeas&userid={userid}&startdate={start.ToUnixTime()}&enddate={end.ToUnixTime()}";
       string normalizedUrl;
       string parameters;
-      var signature = oAuth.GenerateSignature(new Uri(uri), _credentials.ConsumerKey, _credentials.ConsumerSecret,
+      var signature = oAuth.GenerateSignature(new Uri(query), _credentials.ConsumerKey, _credentials.ConsumerSecret,
         token, secret, "GET", timeStamp, nonce,
         OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out parameters);
-      var request = new RestRequest("measure", Method.GET);
-      request
-        .AddQueryParameter("action", "getmeas")
-        .AddQueryParameter("userid", userid)
-        .AddQueryParameter("startdate", start.ToUnixTime().ToString())
-        .AddQueryParameter("enddate", end.ToUnixTime().ToString());
-      AddOAuthParameters(request, nonce, timeStamp, signature, token);
+      query.SetQueryParam("oauth_consumer_key", _credentials.ConsumerKey);
+      query.SetQueryParam("oauth_nonce", nonce);
+      query.SetQueryParam("oauth_signature", signature);
+      query.SetQueryParam("oauth_signature_method", "HMAC-SHA1");
+      query.SetQueryParam("oauth_timestamp", timeStamp);
+      query.SetQueryParam("oauth_token", token);
+      query.SetQueryParam("oauth_version", "1.0");
 
-      var response = client.Execute(request);
-      return JsonConvert.DeserializeObject(response.Content);
+      return await query.GetJsonAsync().ConfigureAwait(false);
     }
 
-    public WithingsWeighInResponse GetBodyMeasures(string userid, DateTime lastupdate, string token, string secret)
+    public async Task<ExpandoObject> GetBodyMeasures(string userid, DateTime lastupdate, string token, string secret)
     {
+      var query = "https://wbsapi.withings.net".AppendPathSegment("measure")
+        .SetQueryParam("action", "getmeas")
+        .SetQueryParam("userid", userid)
+        .SetQueryParam("lastupdate", lastupdate.ToUnixTime());
       var oAuth = new OAuthBase();
       var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
       var timeStamp = oAuth.GenerateTimeStamp();
-      var uri =
-        $"https://wbsapi.withings.net/measure?action=getmeas&userid={userid}&lastupdate={lastupdate.ToUnixTime()}";
       string normalizedUrl;
       string parameters;
-      var signature = oAuth.GenerateSignature(new Uri(uri), _credentials.ConsumerKey, _credentials.ConsumerSecret,
+      var signature = oAuth.GenerateSignature(new Uri(query), _credentials.ConsumerKey, _credentials.ConsumerSecret,
         token, secret, "GET", timeStamp, nonce,
         OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out parameters);
-      var request = new RestRequest("measure", Method.GET);
-      request
-        .AddQueryParameter("action", "getmeas")
-        .AddQueryParameter("userid", userid)
-        .AddQueryParameter("lastupdate", lastupdate.ToUnixTime().ToString());
-      AddOAuthParameters(request, nonce, timeStamp, signature, token);
-      var client = new RestClient("https://wbsapi.withings.net");
-      var response = client.Execute<WithingsWeighInResponse>(request);
-      return response.Data;
+      query.SetQueryParam("oauth_consumer_key", _credentials.ConsumerKey);
+      query.SetQueryParam("oauth_nonce", nonce);
+      query.SetQueryParam("oauth_signature", signature);
+      query.SetQueryParam("oauth_signature_method", "HMAC-SHA1");
+      query.SetQueryParam("oauth_timestamp", timeStamp);
+      query.SetQueryParam("oauth_token", token);
+      query.SetQueryParam("oauth_version", "1.0");
+
+      return await query.GetJsonAsync().ConfigureAwait(false);
     }
 
     #endregion
-
-    void AddOAuthParameters(IRestRequest request, string nonce, string timeStamp, string signature, string token)
-    {
-      request
-        .AddQueryParameter("oauth_consumer_key", _credentials.ConsumerKey)
-        .AddQueryParameter("oauth_nonce", nonce)
-        .AddQueryParameter("oauth_signature", signature)
-        .AddQueryParameter("oauth_timestamp", timeStamp)
-        .AddQueryParameter("oauth_token", token)
-        .AddQueryParameter("oauth_signature_method", "HMAC-SHA1")
-        .AddQueryParameter("oauth_version", "1.0");
-    }
   }
 }

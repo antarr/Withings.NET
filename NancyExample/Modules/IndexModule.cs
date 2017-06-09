@@ -41,21 +41,21 @@ namespace NancyExample.Modules
                 return new JsonResponse(credentials, new DefaultJsonSerializer());
             };
 
-      Get["api/withings/activity", true] = async (nothing, ctx) =>
-      {
-        var client = new WithingsClient(_credentials);
-        var activity = await client.GetActivityMeasures
-              (
-                  DateTime.Parse("2017-01-01"),
-                  DateTime.Parse("2017-03-30"),
-                  ConfigurationManager.AppSettings["UserId"],
-                  ConfigurationManager.AppSettings["OAuthToken"],
-                  ConfigurationManager.AppSettings["OAuthSecret"]
-              );
-        return new JsonResponse(activity, new DefaultJsonSerializer());
-      };
+            Get["api/withings/activity", true] = async (nothing, ctx) =>
+            {
+              var client = new WithingsClient(_credentials);
+              var activity = await client.GetActivityMeasures
+                    (
+                        DateTime.Parse("2017-01-01"),
+                        DateTime.Parse("2017-03-30"),
+                        ConfigurationManager.AppSettings["UserId"],
+                        ConfigurationManager.AppSettings["OAuthToken"],
+                        ConfigurationManager.AppSettings["OAuthSecret"]
+                    );
+              return new JsonResponse(activity, new DefaultJsonSerializer());
+            };
 
-      Get["api/withings/dailyactivity", true] = async (nothing,ctx) =>
+            Get["api/withings/dailyactivity", true] = async (nothing,ctx) =>
             {
                 var client = new WithingsClient(_credentials);
                 var activity = await client.GetActivityMeasures
@@ -122,23 +122,23 @@ namespace NancyExample.Modules
                 return new JsonResponse<object>(activity, new DefaultJsonSerializer());
             };
 
-            Get["api/withings/bodysince"] = nothing =>
+            Get["api/withings/bodysince", true] = async (nothing,ctx) =>
             {
                 var client = new WithingsClient(_credentials);
-                var activity = client.GetBodyMeasures
+                var activity = await client.GetBodyMeasures
                 (
                     ConfigurationManager.AppSettings["UserId"],
                     DateTime.Parse("2017-05-08"),
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse<WithingsWeighInResponse>(activity, new DefaultJsonSerializer());
+                return new JsonResponse(activity, new DefaultJsonSerializer());
             };
 
-            Get["api/withings/intraday"] = nothing =>
+            Get["api/withings/intraday", true] = async (nothing, ctx) =>
             {
                 var client = new WithingsClient(_credentials);
-                var activity = client.GetIntraDayActivity(
+                var activity = await client.GetIntraDayActivity(
                     ConfigurationManager.AppSettings["UserId"],
                     DateTime.Now.AddDays(-90),
                     DateTime.Now.AddDays(-1),

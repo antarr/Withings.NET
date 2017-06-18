@@ -74,18 +74,18 @@ namespace Withings.NET.Client
 
         #region Get Sleep Measures/Summary
 
-        public async Task<ExpandoObject> GetSleepSummary(string startday, string endday, string token, string secret)
+        public async Task<SleepSummary> GetSleepSummary(string startday, string endday, string token, string secret)
         {
             var query = BaseUri.AppendPathSegment("sleep")
                 .SetQueryParam("action", "getsummary")
                 .SetQueryParam("startdateymd", startday)
                 .SetQueryParam("enddateymd", endday);
             var oAuth = new OAuthBase();
-            string nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
-            string timeStamp = oAuth.GenerateTimeStamp();
+            var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
+            var timeStamp = oAuth.GenerateTimeStamp();
             string normalizedUrl;
             string parameters;
-            string signature = oAuth.GenerateSignature(new Uri(query), _credentials.ConsumerKey, _credentials.ConsumerSecret,
+            var signature = oAuth.GenerateSignature(new Uri(query), _credentials.ConsumerKey, _credentials.ConsumerSecret,
                 token, secret, "GET", timeStamp, nonce,
                 OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out parameters);
             query.SetQueryParam("oauth_consumer_key", _credentials.ConsumerKey);
@@ -96,10 +96,10 @@ namespace Withings.NET.Client
             query.SetQueryParam("oauth_token", token);
             query.SetQueryParam("oauth_version", "1.0");
 
-            return await query.GetJsonAsync().ConfigureAwait(false);
+            return await query.GetJsonAsync<SleepSummary>().ConfigureAwait(false);
         }
 
-        public async Task<ExpandoObject> GetSleepMeasures(string userid, DateTime startday, DateTime endday, string token, string secret)
+        public async Task<SleepMeasures> GetSleepMeasures(string userid, DateTime startday, DateTime endday, string token, string secret)
         {
             var query = BaseUri.AppendPathSegment("sleep")
                 .SetQueryParam("action", "get")
@@ -120,14 +120,14 @@ namespace Withings.NET.Client
             query.SetQueryParam("oauth_timestamp", timeStamp);
             query.SetQueryParam("oauth_token", token);
             query.SetQueryParam("oauth_version", "1.0");
-            return await query.GetJsonAsync().ConfigureAwait(false);
+            return await query.GetJsonAsync<SleepMeasures>().ConfigureAwait(false);
         }
 
         #endregion
 
         #region Get Workouts
 
-        public async Task<ExpandoObject> GetWorkouts(string startday, string endday, string token, string secret)
+        public async Task<WeighInResponse> GetWorkouts(string startday, string endday, string token, string secret)
         {
             var query = BaseUri.AppendPathSegment("measure").SetQueryParam("action", "getworkouts")
                 .SetQueryParam("startdateymd", startday).SetQueryParam("enddateymd", endday);
@@ -147,7 +147,7 @@ namespace Withings.NET.Client
             query.SetQueryParam("oauth_token", token);
             query.SetQueryParam("oauth_version", "1.0");
 
-            return await query.GetJsonAsync().ConfigureAwait(false);
+            return await query.GetJsonAsync<WeighInResponse>().ConfigureAwait(false);
         }
 
         #endregion

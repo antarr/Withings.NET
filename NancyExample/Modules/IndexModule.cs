@@ -15,9 +15,9 @@ namespace NancyExample.Modules
         public IndexModule()
         {
             var _credentials = new WithingsCredentials();
-            _credentials.SetCallbackUrl(ConfigurationManager.AppSettings["WithingsCallbackUrl"]);
-            _credentials.SetConsumerProperties(ConfigurationManager.AppSettings["WithingsConsumerKey"],
-                ConfigurationManager.AppSettings["WithingsConsumerSecret"]);
+            _credentials.SetCallbackUrl(Environment.GetEnvironmentVariable("WithingsCallbackUrl"));
+            _credentials.SetConsumerProperties(Environment.GetEnvironmentVariable("WithingsConsumerKey"),
+                Environment.GetEnvironmentVariable("WithingsConsumerSecret"));
 
             var authenticator = new Authenticator(_credentials);
 

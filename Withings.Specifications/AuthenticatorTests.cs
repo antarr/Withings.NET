@@ -19,8 +19,8 @@ namespace Withings.Specifications
         public async Task Init()
         {
             _credentials = new WithingsCredentials();
-            _credentials.SetCallbackUrl("http://localhost:56617/api/oauth/callback");
-            _credentials.SetConsumerProperties("", "");
+          _credentials.SetCallbackUrl(Environment.GetEnvironmentVariable("WithingsCallbackUrl"));
+            _credentials.SetConsumerProperties(Environment.GetEnvironmentVariable("WithingsConsumerKey"), Environment.GetEnvironmentVariable("WithingsConsumerSecret"));
             _authenticator = new Authenticator(_credentials);
             _requestToken = await _authenticator.GetRequestToken();
          }

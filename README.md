@@ -9,7 +9,6 @@
 [![NuGet](https://img.shields.io/nuget/v/Nuget.Core.svg?style=plastic)](https://www.nuget.org/packages/Withings.NET)
 
 ## USAGE
-Due to external dependencies, your callback url should include a username param i.e. http://localhost:49294/api/oauth/callback/{username} 
 
 ### All examples will use the Nancy Framework
 

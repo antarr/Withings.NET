@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using RestSharp.Extensions.MonoHttp;
 using static System.String;
 
 namespace Withings.NET.Client
@@ -255,17 +254,18 @@ namespace Withings.NET.Client
             switch (signatureType)
             {
                 case SignatureTypes.PLAINTEXT:
-                    return HttpUtility.UrlEncode($"{consumerSecret}&{tokenSecret}");
+                    return System.Net.WebUtility.UrlEncode($"{consumerSecret}&{tokenSecret}");
                 case SignatureTypes.HMACSHA1:
                     var signatureBase = GenerateSignatureBase(url, consumerKey, token, tokenSecret, httpMethod, timeStamp, nonce, Hmacsha1SignatureType, out normalizedUrl, out normalizedRequestParameters);
 
-                    var hmacsha1 = new HMACSHA1
+                    using (var hmacsha1 = new HMACSHA1
                     {
                         Key = Encoding.ASCII.GetBytes(
                             $"{UrlEncode(consumerSecret)}&{(IsNullOrEmpty(tokenSecret) ? "" : UrlEncode(tokenSecret))}")
-                    };
-
-                    return GenerateSignatureUsingHash(signatureBase, hmacsha1);
+                    })
+                    {
+                        return GenerateSignatureUsingHash(signatureBase, hmacsha1);
+                    }
                 case SignatureTypes.RSASHA1:
                     throw new NotImplementedException();
                 default:

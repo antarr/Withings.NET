@@ -1,9 +1,9 @@
-﻿namespace Withings.NET.Models
+namespace Withings.NET.Models
 {
     public class WithingsCredentials
     {
-        public string ConsumerKey { get; set; }
-        public string ConsumerSecret { get; set; }
+        public string ClientId { get; set; }
+        public string ClientSecret { get; set; }
         public string CallbackUrl { get; set; }
 
         public void SetCallbackUrl(string url)
@@ -11,10 +11,10 @@
             CallbackUrl = url;
         }
 
-        public void SetConsumerProperties(string key, string secret)
+        public void SetClientProperties(string id, string secret)
         {
-            ConsumerKey = key;
-            ConsumerSecret = secret;
+            ClientId = id;
+            ClientSecret = secret;
         }
     }
 }

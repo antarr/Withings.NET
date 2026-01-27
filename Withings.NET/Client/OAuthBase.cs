@@ -63,9 +63,18 @@ namespace Withings.NET.Client
         protected const string PlainTextSignatureType = "PLAINTEXT";
         protected const string Rsasha1SignatureType = "RSA-SHA1";
 
-        protected static Random Random = new Random();
+        protected static readonly Random Random = new Random(GetSecureRandomSeed());
         private static readonly object _randomLock = new object();
 
+        private static int GetSecureRandomSeed()
+        {
+            var seedBytes = new byte[4];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(seedBytes);
+            }
+            return BitConverter.ToInt32(seedBytes, 0);
+        }
         protected static readonly string UnreservedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
 
         /// <summary>

@@ -66,7 +66,7 @@ namespace Withings.NET.Client
         protected static Random Random = new Random();
         private static readonly object _randomLock = new object();
 
-        protected string UnreservedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
+        protected static readonly string UnreservedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
 
         /// <summary>
         /// Helper function to compute a hash value

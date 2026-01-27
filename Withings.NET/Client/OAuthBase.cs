@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using RestSharp.Extensions.MonoHttp;
 using static System.String;
 
 namespace Withings.NET.Client
@@ -64,9 +63,19 @@ namespace Withings.NET.Client
         protected const string PlainTextSignatureType = "PLAINTEXT";
         protected const string Rsasha1SignatureType = "RSA-SHA1";
 
-        protected Random Random = new Random();
+        protected static readonly Random Random = new Random(GetSecureRandomSeed());
+        private static readonly object _randomLock = new object();
 
-        protected string UnreservedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
+        private static int GetSecureRandomSeed()
+        {
+            var seedBytes = new byte[4];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(seedBytes);
+            }
+            return BitConverter.ToInt32(seedBytes, 0);
+        }
+        protected static readonly string UnreservedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
 
         /// <summary>
         /// Helper function to compute a hash value
@@ -162,7 +171,7 @@ namespace Withings.NET.Client
         /// Generate the signature base that is used to produce the signature
         /// </summary>
         /// <param name="url">The full url that needs to be signed including its non OAuth url parameters</param>
-        /// <param name="consumerKey">The consumer key</param>        
+        /// <param name="consumerKey">The consumer key</param>
         /// <param name="token">The token, if available. If not available pass null or an empty string</param>
         /// <param name="tokenSecret">The token secret, if available. If not available pass null or an empty string</param>
         /// <param name="httpMethod">The http method used. Must be a valid HTTP method verb (POST,GET,PUT, etc)</param>
@@ -218,7 +227,7 @@ namespace Withings.NET.Client
 
         /// <summary>
         /// Generates a signature using the HMAC-SHA1 algorithm
-        /// </summary>		
+        /// </summary>
         /// <param name="url">The full url that needs to be signed including its non OAuth url parameters</param>
         /// <param name="consumerKey">The consumer key</param>
         /// <param name="consumerSecret">The consumer seceret</param>
@@ -233,8 +242,8 @@ namespace Withings.NET.Client
         public string GenerateSignature(Uri url, string consumerKey, string consumerSecret, string token, string tokenSecret, string httpMethod, string timeStamp, string nonce, out string normalizedUrl, out string normalizedRequestParameters) => GenerateSignature(url, consumerKey, consumerSecret, token, tokenSecret, httpMethod, timeStamp, nonce, SignatureTypes.HMACSHA1, out normalizedUrl, out normalizedRequestParameters);
 
         /// <summary>
-        /// Generates a signature using the specified signatureType 
-        /// </summary>		
+        /// Generates a signature using the specified signatureType
+        /// </summary>
         /// <param name="url">The full url that needs to be signed including its non OAuth url parameters</param>
         /// <param name="consumerKey">The consumer key</param>
         /// <param name="consumerSecret">The consumer seceret</param>
@@ -254,17 +263,18 @@ namespace Withings.NET.Client
             switch (signatureType)
             {
                 case SignatureTypes.PLAINTEXT:
-                    return HttpUtility.UrlEncode($"{consumerSecret}&{tokenSecret}");
+                    return System.Net.WebUtility.UrlEncode($"{consumerSecret}&{tokenSecret}");
                 case SignatureTypes.HMACSHA1:
                     var signatureBase = GenerateSignatureBase(url, consumerKey, token, tokenSecret, httpMethod, timeStamp, nonce, Hmacsha1SignatureType, out normalizedUrl, out normalizedRequestParameters);
 
-                    var hmacsha1 = new HMACSHA1
+                    using (var hmacsha1 = new HMACSHA1
                     {
                         Key = Encoding.ASCII.GetBytes(
                             $"{UrlEncode(consumerSecret)}&{(IsNullOrEmpty(tokenSecret) ? "" : UrlEncode(tokenSecret))}")
-                    };
-
-                    return GenerateSignatureUsingHash(signatureBase, hmacsha1);
+                    })
+                    {
+                        return GenerateSignatureUsingHash(signatureBase, hmacsha1);
+                    }
                 case SignatureTypes.RSASHA1:
                     throw new NotImplementedException();
                 default:
@@ -273,7 +283,7 @@ namespace Withings.NET.Client
         }
 
         /// <summary>
-        /// Generate the timestamp for the signature        
+        /// Generate the timestamp for the signature
         /// </summary>
         /// <returns></returns>
         public virtual string GenerateTimeStamp()
@@ -287,6 +297,12 @@ namespace Withings.NET.Client
         /// Generate a nonce
         /// </summary>
         /// <returns></returns>
-        public virtual string GenerateNonce() => Random.Next(123400, 9999999).ToString();
+        public virtual string GenerateNonce()
+        {
+            lock (_randomLock)
+            {
+                return Random.Next(123400, 9999999).ToString();
+            }
+        }
     }
 }

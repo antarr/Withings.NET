@@ -94,10 +94,10 @@ namespace NancyExample.Modules
                 return new JsonResponse(activity, new DefaultJsonSerializer());
             };
 
-            Get["api/withings/sleepmeasures"] = nothing =>
+            Get["api/withings/sleepmeasures", true] = async (nothing, ct) =>
             {
                 var client = new WithingsClient(_credentials);
-                var activity = client.GetSleepMeasures
+                var activity = await client.GetSleepMeasures
                 (
                     ConfigurationManager.AppSettings["UserId"],
                     DateTime.Now.AddDays(-90),

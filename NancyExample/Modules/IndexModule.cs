@@ -108,10 +108,10 @@ namespace NancyExample.Modules
                 return new JsonResponse(activity, new DefaultJsonSerializer());
             };
 
-            Get["api/withings/body"] = nothing =>
+            Get["api/withings/body", true] = async (nothing, ctx) =>
             {
                 var client = new WithingsClient(_credentials);
-                var activity = client.GetBodyMeasures
+                var activity = await client.GetBodyMeasures
                 (
                     ConfigurationManager.AppSettings["UserId"],
                     DateTime.Parse("2017-05-08"),

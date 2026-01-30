@@ -76,6 +76,7 @@ namespace Withings.NET.Client
             return BitConverter.ToInt32(seedBytes, 0);
         }
         protected static readonly string UnreservedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
+        protected static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
         /// Helper function to compute a hash value
@@ -289,7 +290,7 @@ namespace Withings.NET.Client
         public virtual string GenerateTimeStamp()
         {
             // Default implementation of UNIX time of the current UTC time
-            var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            var ts = DateTime.UtcNow - Epoch;
             return Convert.ToInt64(ts.TotalSeconds).ToString();
         }
 

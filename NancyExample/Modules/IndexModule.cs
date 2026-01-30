@@ -68,10 +68,10 @@ namespace NancyExample.Modules
                 return new JsonResponse(activity, new DefaultJsonSerializer());
             };
 
-            Get["api/withings/sleepsummary"] = nothing =>
+            Get["api/withings/sleepsummary", true] = async (nothing, ct) =>
             {
                 var client = new WithingsClient(_credentials);
-                var activity = client.GetSleepSummary
+                var activity = await client.GetSleepSummary
                 (
                     "2017-01-01",
                     "2017-03-30",

@@ -76,6 +76,16 @@ namespace Withings.NET.Client
             return BitConverter.ToInt32(seedBytes, 0);
         }
         protected static readonly string UnreservedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
+        private static readonly bool[] UnreservedCharsMap = new bool[128];
+
+        static OAuthBase()
+        {
+            foreach (char c in UnreservedChars)
+            {
+                UnreservedCharsMap[c] = true;
+            }
+        }
+
         protected static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
@@ -141,7 +151,7 @@ namespace Withings.NET.Client
             var result = new StringBuilder();
             foreach (var symbol in value)
             {
-                if (UnreservedChars.IndexOf(symbol) != -1)
+                if (symbol < 128 && UnreservedCharsMap[symbol])
                     result.Append(symbol);
                 else
                     result.Append('%' + $"{(int) symbol:X2}");

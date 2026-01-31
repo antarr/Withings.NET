@@ -106,18 +106,18 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/oauth/callback?userid=123456&oauth_verifier=test_verifier",
+							"raw": "{{baseUrl}}/api/oauth/callback?userid={{userid}}&oauth_verifier={{oauth_verifier}}",
 							"host": ["{{baseUrl}}"],
 							"path": ["api", "oauth", "callback"],
 							"query": [
 								{
 									"key": "userid",
-									"value": "123456",
+									"value": "{{userid}}",
 									"description": "Withings user ID returned after authorization"
 								},
 								{
 									"key": "oauth_verifier",
-									"value": "test_verifier",
+									"value": "{{oauth_verifier}}",
 									"description": "OAuth verifier code from Withings"
 								}
 							]

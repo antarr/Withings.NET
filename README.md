@@ -1,5 +1,5 @@
 
-.NET Client for interacting with Withing OAuth1 Api
+.NET Client for interacting with Withings API v2 (OAuth 2.0)
 
 [![Build status](https://ci.appveyor.com/api/projects/status/lw9pd7gbdjgck3sq?svg=true)](https://ci.appveyor.com/project/atbyrd/withings-net)
 [![Coverage Status](https://coveralls.io/repos/github/atbyrd/Withings.NET/badge.svg?branch=master)](https://coveralls.io/github/atbyrd/Withings.NET?branch=master)
@@ -9,57 +9,46 @@
 [![NuGet](https://img.shields.io/nuget/v/Nuget.Core.svg?style=plastic)](https://www.nuget.org/packages/Withings.NET)
 
 ## USAGE
-Due to external dependencies, your callback url should include a username param i.e. http://localhost:49294/api/oauth/callback/{username} 
 
-### All examples will use the Nancy Framework
+### Authorization - Getting user authorization url
+```csharp
+var credentials = new WithingsCredentials();
+credentials.SetClientProperties("client_id", "client_secret");
+credentials.SetCallbackUrl("http://localhost:49294/callback");
 
-#### Authorization - Getting user authorization url
+var authenticator = new Authenticator(credentials);
+var url = authenticator.GetAuthorizeUrl("state", "user.info,user.metrics");
+// Redirect user to url
 ```
-Get["api/oauth/authorize", true] = async (nothing, ct) => 
-{
-   var url = await authenticator.UserRequstUrl(requestToken).ConfigureAwait(true);
-   new JsonRespons(url, new DefaultJsonSerializer());
-}
+
+### Exchanging code for token
+```csharp
+var authResponse = await authenticator.GetAccessToken("authorization_code");
+var accessToken = authResponse.AccessToken;
+```
+
+### Fetching Data
+```csharp
+var client = new WithingsClient();
+var data = await client.GetActivityMeasures(DateTime.Now.AddDays(-1), DateTime.Now, "userid", accessToken);
 ```
 
 ## CHANGE LOG
+
+Version: 3.0.0 |
+Release Date: Current |
+Breaking Changes |
+Migrated to OAuth 2.0.
+Removed OAuth 1.0 support.
+Updated project to SDK style (netstandard2.0).
+Renamed `ConsumerKey`/`ConsumerSecret` to `ClientId`/`ClientSecret`.
+Methods in `WithingsClient` now accept `accessToken` instead of `token` and `secret`.
+Removed `AsyncOAuth` dependency.
+Added `Flurl.Http` 3.x+ support.
 
 Version: 2.1.0 |
 Release Date: April 03, 2017 |
 New Features |
 Get Ability To Get Body Measures
 
-Version: 2.0.0 |
-Release Date: April 03, 2017 |
-Breaking API Change |
-GetActivityMeasures Now Accepts DateTimes Instead of Strings for Dates
-
-Version: 1.1.29 |
-Release Date:April 02, 2017 |
-New Features |
-Add Abiltity To Get Sleep Measures
-
-Version: 1.1.27 |
-Release Date:April 02, 2017 |
-New Features |
-Add Abiltity To Get Workout Data
-
-Version: 1.1.26 |
-Release Date:April 02, 2017 |
-New Features |
-Add Abiltity To Get Sleep Summary Over A Range Of Days
-
-Version: 1.1.23 |
-Release Date:April 01, 2017 |
-New Features |
-Add Abiltity To Get Activity Measures For A Specific Day
-
-Version: 1.1.0 |
-Release Date:April 01, 2017 |
-New Features |
-Add Abiltity To Get Activity Measures For A Date Range
-
-Version: 1.0.0 |
-Release Date:March 06, 2017 |
-New Features |
-Complete Authorization Process
+...

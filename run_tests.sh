@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-echo "Restoring NuGet packages..."
-nuget restore Withings.NET.sln
+echo "Restoring packages..."
+dotnet restore Withings.NET.sln
 
-echo "Building Withings.Specifications..."
-msbuild Withings.Specifications/Withings.Net.Tests.csproj /p:Configuration=Debug
+echo "Building..."
+dotnet build Withings.NET.sln --no-restore
 
 echo "Running tests..."
-mono ./packages/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe Withings.Specifications/bin/Debug/Withings.Specifications.dll --noresult
+dotnet test Withings.NET.sln --no-build --verbosity normal

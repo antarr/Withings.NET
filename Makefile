@@ -4,7 +4,7 @@ test:
 	docker-compose run --rm tests
 
 build:
-	docker-compose run --rm tests bash -c "nuget restore Withings.NET.sln && msbuild Withings.NET.sln /p:Configuration=Debug"
+	docker-compose run --rm tests dotnet build Withings.NET.sln
 
 web:
 	docker-compose up web

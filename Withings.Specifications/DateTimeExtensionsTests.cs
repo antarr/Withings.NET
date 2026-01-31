@@ -11,25 +11,25 @@ namespace Withings.Specifications
         [Test]
         public void DoubleFromUnixTimeTest()
         {
-            ((double)1491934309).FromUnixTime().Date.Should().Equals(DateTime.Parse("04/11/2017"));
+            ((double)1491934309).FromUnixTime().Date.Should().Be(DateTime.Parse("04/11/2017"));
         }
 
         [Test]
         public void LongFromUnixTimeTest()
         {
-            ((long)1491934309).FromUnixTime().Date.Should().Equals(DateTime.Parse("04/11/2017"));
+            ((long)1491934309).FromUnixTime().Date.Should().Be(DateTime.Parse("04/11/2017"));
         }
 
         [Test]
         public void IntFromUnixTimeTest()
         {
-            1491934309.FromUnixTime().Date.Should().Equals(DateTime.Parse("04/11/2017"));
+            1491934309.FromUnixTime().Date.Should().Be(DateTime.Parse("04/11/2017"));
         }
 
         [Test]
         public void DateTimeToUnixTimeTest()
         {
-            DateTime.Parse("04/11/2017").ToUnixTime().Should().Equals(1491934309);
+            DateTime.Parse("04/11/2017").ToUnixTime().Should().Be(1491868800);
         }
     }
 }

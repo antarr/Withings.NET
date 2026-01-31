@@ -1,5 +1,7 @@
-﻿using System;
+using System;
 using System.Configuration;
+using System.Threading;
+using System.Threading.Tasks;
 using AsyncOAuth;
 using Nancy;
 using Nancy.Helpers;
@@ -21,16 +23,16 @@ namespace NancyExample.Modules
 
             var authenticator = new Authenticator(_credentials);
 
-            Get["/"] = nothing => new RedirectResponse("api/oauth/authorize", RedirectResponse.RedirectType.Permanent);
+            Get("/", nothing => new RedirectResponse("api/oauth/authorize", RedirectResponse.RedirectType.Permanent));
 
-            Get["api/oauth/authorize", true] = async (nothing, ct) =>
+            Get("api/oauth/authorize", async (nothing, ct) =>
             {
                 var requestToken = await authenticator.GetRequestToken();
                 ConfigurationManager.AppSettings["RequestToken"] = JsonConvert.SerializeObject(requestToken);
                 return new RedirectResponse(authenticator.UserRequestUrl(requestToken));
-            };
+            });
 
-            Get["api/oauth/callback", true] = async (parameters, ct) =>
+            Get("api/oauth/callback", async (parameters, ct) =>
             {
                 var ps = HttpUtility.ParseQueryString(Request.Url.Query);
                 ConfigurationManager.AppSettings["UserId"] = ps["userid"];
@@ -38,10 +40,10 @@ namespace NancyExample.Modules
                 var credentials = await authenticator.ExchangeRequestTokenForAccessToken(JsonConvert.DeserializeObject<RequestToken>(ConfigurationManager.AppSettings["RequestToken"]), verifier);
                 ConfigurationManager.AppSettings["OAuthToken"] = credentials.Key;
                 ConfigurationManager.AppSettings["OAuthSecret"] = credentials.Secret;
-                return new JsonResponse(credentials, new DefaultJsonSerializer());
-            };
+                return Response.AsJson(credentials);
+            });
 
-            Get["api/withings/activity", true] = async (nothing, ctx) =>
+            Get("api/withings/activity", async (nothing, ctx) =>
             {
               var client = new WithingsClient(_credentials);
               var activity = await client.GetActivityMeasures
@@ -52,10 +54,10 @@ namespace NancyExample.Modules
                         ConfigurationManager.AppSettings["OAuthToken"],
                         ConfigurationManager.AppSettings["OAuthSecret"]
                     );
-              return new JsonResponse(activity, new DefaultJsonSerializer());
-            };
+              return Response.AsJson(activity);
+            });
 
-            Get["api/withings/dailyactivity", true] = async (nothing,ctx) =>
+            Get("api/withings/dailyactivity", async (nothing,ctx) =>
             {
                 var client = new WithingsClient(_credentials);
                 var activity = await client.GetActivityMeasures
@@ -65,10 +67,10 @@ namespace NancyExample.Modules
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse(activity, new DefaultJsonSerializer());
-            };
+                return Response.AsJson(activity);
+            });
 
-            Get["api/withings/sleepsummary", true] = async (nothing, ct) =>
+            Get("api/withings/sleepsummary", async (nothing, ct) =>
             {
                 var client = new WithingsClient(_credentials);
                 var activity = await client.GetSleepSummary
@@ -78,10 +80,10 @@ namespace NancyExample.Modules
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse(activity, new DefaultJsonSerializer());
-            };
+                return Response.AsJson(activity);
+            });
 
-            Get["api/withings/workouts", true] = async (nothing, ctx) =>
+            Get("api/withings/workouts", async (nothing, ctx) =>
             {
                 var client = new WithingsClient(_credentials);
                 var activity = await client.GetWorkouts
@@ -91,10 +93,10 @@ namespace NancyExample.Modules
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse(activity, new DefaultJsonSerializer());
-            };
+                return Response.AsJson(activity);
+            });
 
-            Get["api/withings/sleepmeasures", true] = async (nothing, ct) =>
+            Get("api/withings/sleepmeasures", async (nothing, ct) =>
             {
                 var client = new WithingsClient(_credentials);
                 var activity = await client.GetSleepMeasures
@@ -105,10 +107,10 @@ namespace NancyExample.Modules
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse(activity, new DefaultJsonSerializer());
-            };
+                return Response.AsJson(activity);
+            });
 
-            Get["api/withings/body", true] = async (nothing, ctx) =>
+            Get("api/withings/body", async (nothing, ctx) =>
             {
                 var client = new WithingsClient(_credentials);
                 var activity = await client.GetBodyMeasures
@@ -119,10 +121,10 @@ namespace NancyExample.Modules
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse<object>(activity, new DefaultJsonSerializer());
-            };
+                return Response.AsJson(activity);
+            });
 
-            Get["api/withings/bodysince", true] = async (nothing,ctx) =>
+            Get("api/withings/bodysince", async (nothing,ctx) =>
             {
                 var client = new WithingsClient(_credentials);
                 var activity = await client.GetBodyMeasures
@@ -132,10 +134,10 @@ namespace NancyExample.Modules
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse(activity, new DefaultJsonSerializer());
-            };
+                return Response.AsJson(activity);
+            });
 
-            Get["api/withings/intraday", true] = async (nothing, ctx) =>
+            Get("api/withings/intraday", async (nothing, ctx) =>
             {
                 var client = new WithingsClient(_credentials);
                 var activity = await client.GetIntraDayActivity(
@@ -145,14 +147,14 @@ namespace NancyExample.Modules
                     ConfigurationManager.AppSettings["OAuthToken"],
                     ConfigurationManager.AppSettings["OAuthSecret"]
                 );
-                return new JsonResponse(activity, new DefaultJsonSerializer());
-            };
+                return Response.AsJson(activity);
+            });
 
-            Get["api/oauth/requesttoken", true] = async (nothing, ct) =>
+            Get("api/oauth/requesttoken", async (nothing, ct) =>
             {
                 var token = await authenticator.GetRequestToken();
-                return new JsonResponse<RequestToken>(token, new DefaultJsonSerializer());
-            };
+                return Response.AsJson(token);
+            });
         }
     }
 }

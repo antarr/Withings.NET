@@ -9,6 +9,7 @@ using Withings.NET.Models;
 namespace Withings.Specifications
 {
     [TestFixture]
+    [Explicit("Requires Withings credentials and network access")]
     public class AuthenticatorTests
     {
         Authenticator _authenticator;

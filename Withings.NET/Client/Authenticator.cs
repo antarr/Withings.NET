@@ -29,7 +29,7 @@ namespace Withings.NET.Client
           var authorizer = new OAuthAuthorizer(_consumerKey, _consumerSecret);
           var parameters = new List<KeyValuePair<string, string>>
           {
-            new KeyValuePair<string, string>("oauth_callback", Uri.EscapeUriString(_callbackUrl))
+            new KeyValuePair<string, string>("oauth_callback", Uri.EscapeDataString(_callbackUrl ?? ""))
           };
           TokenResponse<RequestToken> tokenResponse = await authorizer.GetRequestToken("https://oauth.withings.com/account/request_token", parameters);
           return tokenResponse.Token;

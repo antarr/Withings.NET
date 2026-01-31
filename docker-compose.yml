@@ -14,4 +14,4 @@ services:
     ports:
       - "8080:8080"
     working_dir: /app/NancyExample
-    command: xsp4 --port 8080 --nonstop
+    command: dotnet run --project NancyExample.csproj

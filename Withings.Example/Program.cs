@@ -31,10 +31,35 @@ app.MapGet("/api/oauth/authorize", async () =>
 app.MapGet("/api/oauth/callback", async (HttpContext context) =>
 {
     var query = HttpUtility.ParseQueryString(context.Request.QueryString.Value ?? "");
-    ConfigurationManager.AppSettings["UserId"] = query["userid"];
+
+    var userId = query["userid"];
+    if (string.IsNullOrWhiteSpace(userId))
+    {
+        return Results.BadRequest("Missing required query parameter 'userid'.");
+    }
+
     var verifier = query["oauth_verifier"];
+    if (string.IsNullOrWhiteSpace(verifier))
+    {
+        return Results.BadRequest("Missing required query parameter 'oauth_verifier'.");
+    }
+
+    var requestTokenJson = ConfigurationManager.AppSettings["RequestToken"];
+    if (string.IsNullOrWhiteSpace(requestTokenJson))
+    {
+        return Results.BadRequest("OAuth flow has not been started or request token is missing.");
+    }
+
+    var requestToken = JsonConvert.DeserializeObject<RequestToken>(requestTokenJson);
+    if (requestToken == null)
+    {
+        return Results.BadRequest("Stored request token is invalid or could not be deserialized.");
+    }
+
+    ConfigurationManager.AppSettings["UserId"] = userId;
+
     var accessCredentials = await authenticator.ExchangeRequestTokenForAccessToken(
-        JsonConvert.DeserializeObject<RequestToken>(ConfigurationManager.AppSettings["RequestToken"]),
+        requestToken,
         verifier);
     ConfigurationManager.AppSettings["OAuthToken"] = accessCredentials.Key;
     ConfigurationManager.AppSettings["OAuthSecret"] = accessCredentials.Secret;

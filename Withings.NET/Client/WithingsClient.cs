@@ -29,7 +29,7 @@ namespace Withings.NET.Client
                 .SetQueryParam("startdateymd", $"{startDay:yyyy-MM-dd}")
                 .SetQueryParam("enddateymd", $"{endDay:yyyy-MM-dd}");
             var oAuth = _oAuth;
-            string nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
+            string nonce = Convert.ToBase64String(Encoding.ASCII.GetBytes(DateTime.Now.Ticks.ToString()));
             string timeStamp = oAuth.GenerateTimeStamp();
             string normalizedUrl;
             string parameters;
@@ -53,7 +53,7 @@ namespace Withings.NET.Client
                 .SetQueryParam("userid", userId)
                 .SetQueryParam("date", $"{lastUpdate:yyyy-MM-dd}");
             var oAuth = _oAuth;
-            string nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
+            string nonce = Convert.ToBase64String(Encoding.ASCII.GetBytes(DateTime.Now.Ticks.ToString()));
             string timeStamp = oAuth.GenerateTimeStamp();
             string normalizedUrl;
             string parameters;
@@ -82,7 +82,7 @@ namespace Withings.NET.Client
                 .SetQueryParam("startdateymd", startday)
                 .SetQueryParam("enddateymd", endday);
             var oAuth = _oAuth;
-            string nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
+            string nonce = Convert.ToBase64String(Encoding.ASCII.GetBytes(DateTime.Now.Ticks.ToString()));
             string timeStamp = oAuth.GenerateTimeStamp();
             string normalizedUrl;
             string parameters;
@@ -107,7 +107,7 @@ namespace Withings.NET.Client
                 .SetQueryParam("startdate", startday.ToUnixTime())
                 .SetQueryParam("enddate", endday.ToUnixTime());
             var oAuth = _oAuth;
-            string nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
+            string nonce = Convert.ToBase64String(Encoding.ASCII.GetBytes(DateTime.Now.Ticks.ToString()));
             string timeStamp = oAuth.GenerateTimeStamp();
             string normalizedUrl;
             string parameters;
@@ -133,7 +133,7 @@ namespace Withings.NET.Client
             var query = BaseUri.AppendPathSegment("measure").SetQueryParam("action", "getworkouts")
                 .SetQueryParam("startdateymd", startday).SetQueryParam("enddateymd", endday);
             var oAuth = _oAuth;
-            var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
+            var nonce = Convert.ToBase64String(Encoding.ASCII.GetBytes(DateTime.Now.Ticks.ToString()));
             var timeStamp = oAuth.GenerateTimeStamp();
             string normalizedUrl;
             string parameters;
@@ -163,7 +163,7 @@ namespace Withings.NET.Client
                 .SetQueryParam("startdate", start.ToUnixTime())
                 .SetQueryParam("enddate", end.ToUnixTime());
             var oAuth = _oAuth;
-            var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
+            var nonce = Convert.ToBase64String(Encoding.ASCII.GetBytes(DateTime.Now.Ticks.ToString()));
             var timeStamp = oAuth.GenerateTimeStamp();
             string normalizedUrl;
             string parameters;
@@ -193,7 +193,7 @@ namespace Withings.NET.Client
                 .SetQueryParam("startdate", start.ToUnixTime())
                 .SetQueryParam("enddate", end.ToUnixTime());
             var oAuth = _oAuth;
-            var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
+            var nonce = Convert.ToBase64String(Encoding.ASCII.GetBytes(DateTime.Now.Ticks.ToString()));
             var timeStamp = oAuth.GenerateTimeStamp();
             string normalizedUrl;
             string parameters;
@@ -218,7 +218,7 @@ namespace Withings.NET.Client
                 .SetQueryParam("userid", userid)
                 .SetQueryParam("lastupdate", lastupdate.ToUnixTime());
             var oAuth = _oAuth;
-            var nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
+            var nonce = Convert.ToBase64String(Encoding.ASCII.GetBytes(DateTime.Now.Ticks.ToString()));
             var timeStamp = oAuth.GenerateTimeStamp();
             string normalizedUrl;
             string parameters;

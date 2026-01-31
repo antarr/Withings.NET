@@ -1,3 +1,4 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
@@ -9,8 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{762B0907-2F7B-47F7-8B1C-DF5886B7EDF4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6A236188-BE65-4754-87B9-4CDA9E0A028D}"
-EndProject
-Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "Withings.NET", "Withings.NET.Nuget\Withings.NET.nuproj", "{9A4CC02C-7E7C-457B-99D2-C74B482003DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Withings.Net.Tests", "Withings.Specifications\Withings.Net.Tests.csproj", "{8EDF4429-251A-416D-BB68-93F227191BCF}"
 EndProject
@@ -28,10 +27,6 @@ Global
 		{ED638DD5-E755-4B7A-940D-5C94AB425686}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED638DD5-E755-4B7A-940D-5C94AB425686}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED638DD5-E755-4B7A-940D-5C94AB425686}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9A4CC02C-7E7C-457B-99D2-C74B482003DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9A4CC02C-7E7C-457B-99D2-C74B482003DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9A4CC02C-7E7C-457B-99D2-C74B482003DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9A4CC02C-7E7C-457B-99D2-C74B482003DC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8EDF4429-251A-416D-BB68-93F227191BCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8EDF4429-251A-416D-BB68-93F227191BCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EDF4429-251A-416D-BB68-93F227191BCF}.Release|Any CPU.ActiveCfg = Release|Any CPU

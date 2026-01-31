@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  tests:
+    build: .
+    volumes:
+      - .:/app
+    command: sh ./run_tests.sh
+
+  web:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+    working_dir: /app/NancyExample
+    command: dotnet run --project NancyExample.csproj

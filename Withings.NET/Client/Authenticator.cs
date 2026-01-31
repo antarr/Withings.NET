@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
-using AsyncOAuth;
 using Withings.NET.Models;
 
 [assembly: InternalsVisibleTo("Withings.Net.Specifications")]
@@ -11,6 +10,9 @@ namespace Withings.NET.Client
 {
     public class Authenticator
     {
+        private static readonly OAuthBase _oAuth = new OAuthBase();
+        private static readonly HttpClient _httpClient = new HttpClient();
+
         readonly string _consumerKey;
         readonly string _consumerSecret;
         readonly string _callbackUrl;
@@ -20,40 +22,67 @@ namespace Withings.NET.Client
           _consumerKey = credentials.ConsumerKey;
           _consumerSecret = credentials.ConsumerSecret;
           _callbackUrl = credentials.CallbackUrl;
-
-          OAuthUtility.ComputeHash = (key, buffer) => { using (var hmac = new HMACSHA1(key)) { return hmac.ComputeHash(buffer); } };
         }
 
-        public async Task<RequestToken> GetRequestToken()
+        public async Task<OAuthToken> GetRequestToken()
         {
-          var authorizer = new OAuthAuthorizer(_consumerKey, _consumerSecret);
-          var parameters = new List<KeyValuePair<string, string>>
-          {
-            new KeyValuePair<string, string>("oauth_callback", Uri.EscapeDataString(_callbackUrl ?? ""))
-          };
-          TokenResponse<RequestToken> tokenResponse = await authorizer.GetRequestToken("https://oauth.withings.com/account/request_token", parameters);
-          return tokenResponse.Token;
+          var url = new Uri("https://oauth.withings.com/account/request_token"
+              + "?oauth_callback=" + Uri.EscapeDataString(_callbackUrl ?? ""));
+
+          string nonce = _oAuth.GenerateNonce();
+          string timeStamp = _oAuth.GenerateTimeStamp();
+          string normalizedUrl;
+          string normalizedParams;
+          string signature = _oAuth.GenerateSignature(url, _consumerKey, _consumerSecret,
+              null, null, "GET", timeStamp, nonce,
+              OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out normalizedParams);
+
+          var requestUrl = normalizedUrl + "?" + normalizedParams
+              + "&oauth_signature=" + Uri.EscapeDataString(signature);
+
+          var response = await _httpClient.GetStringAsync(requestUrl).ConfigureAwait(false);
+          var parsed = ParseResponseParameters(response);
+
+          return new OAuthToken(parsed["oauth_token"], parsed["oauth_token_secret"]);
         }
 
-        /// <summary>
-        /// GET USER REQUEST URL
-        /// </summary>
-        /// <returns>string</returns>
-        public string UserRequestUrl(RequestToken token)
+        public string UserRequestUrl(OAuthToken token)
         {
-          var authorizer = new OAuthAuthorizer(_consumerKey, _consumerSecret);
-          return authorizer.BuildAuthorizeUrl("https://oauth.withings.com/account/authorize", token);
+          return "https://oauth.withings.com/account/authorize?oauth_token=" + Uri.EscapeDataString(token.Key);
         }
 
-        /// <summary>
-        /// GET USER ACCESS TOKEN
-        /// </summary>
-        /// <returns>OAuth1Credentials</returns>
-        public async Task<AccessToken> ExchangeRequestTokenForAccessToken(RequestToken requestToken, string oAuthVerifier)
+        public async Task<OAuthToken> ExchangeRequestTokenForAccessToken(OAuthToken requestToken, string oAuthVerifier)
         {
-            var authorizer = new OAuthAuthorizer(_consumerKey, _consumerSecret);
-            TokenResponse<AccessToken> accessTokenResponse = await authorizer.GetAccessToken("https://oauth.withings.com/account/access_token", requestToken, oAuthVerifier);
-            return accessTokenResponse.Token;
+            var url = new Uri("https://oauth.withings.com/account/access_token");
+
+            string nonce = _oAuth.GenerateNonce();
+            string timeStamp = _oAuth.GenerateTimeStamp();
+            string normalizedUrl;
+            string normalizedParams;
+            string signature = _oAuth.GenerateSignature(url, _consumerKey, _consumerSecret,
+                requestToken.Key, requestToken.Secret, "GET", timeStamp, nonce,
+                OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out normalizedParams);
+
+            var requestUrl = normalizedUrl + "?" + normalizedParams
+                + "&oauth_verifier=" + Uri.EscapeDataString(oAuthVerifier)
+                + "&oauth_signature=" + Uri.EscapeDataString(signature);
+
+            var response = await _httpClient.GetStringAsync(requestUrl).ConfigureAwait(false);
+            var parsed = ParseResponseParameters(response);
+
+            return new OAuthToken(parsed["oauth_token"], parsed["oauth_token_secret"]);
+        }
+
+        private static Dictionary<string, string> ParseResponseParameters(string response)
+        {
+            var result = new Dictionary<string, string>();
+            foreach (var pair in response.Split('&'))
+            {
+                var parts = pair.Split('=');
+                if (parts.Length == 2)
+                    result[Uri.UnescapeDataString(parts[0])] = Uri.UnescapeDataString(parts[1]);
+            }
+            return result;
         }
     }
 }

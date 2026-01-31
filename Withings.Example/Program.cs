@@ -30,10 +30,26 @@ app.MapGet("/api/oauth/authorize", async () =>
 app.MapGet("/api/oauth/callback", async (HttpContext context) =>
 {
     var query = context.Request.Query;
-    session["UserId"] = query["userid"];
+
+    var userId = (string)query["userid"];
+    if (string.IsNullOrWhiteSpace(userId))
+        return Results.BadRequest("Missing required query parameter 'userid'.");
+
     var verifier = (string)query["oauth_verifier"];
+    if (string.IsNullOrWhiteSpace(verifier))
+        return Results.BadRequest("Missing required query parameter 'oauth_verifier'.");
+
+    if (!session.TryGetValue("RequestToken", out var requestTokenJson) || string.IsNullOrWhiteSpace(requestTokenJson))
+        return Results.BadRequest("OAuth flow has not been started or request token is missing.");
+
+    var requestToken = JsonSerializer.Deserialize<OAuthToken>(requestTokenJson);
+    if (requestToken == null)
+        return Results.BadRequest("Stored request token is invalid or could not be deserialized.");
+
+    session["UserId"] = userId;
+
     var accessCredentials = await authenticator.ExchangeRequestTokenForAccessToken(
-        JsonSerializer.Deserialize<OAuthToken>(session["RequestToken"]),
+        requestToken,
         verifier);
     session["OAuthToken"] = accessCredentials.Key;
     session["OAuthSecret"] = accessCredentials.Secret;

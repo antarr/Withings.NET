@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Withings", "Withings.NET\Withings.csproj", "{D2E459A9-C641-40A5-9124-35A4539E90EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NancyExample", "NancyExample\NancyExample.csproj", "{ED638DD5-E755-4B7A-940D-5C94AB425686}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Withings.Example", "Withings.Example\Withings.Example.csproj", "{ED638DD5-E755-4B7A-940D-5C94AB425686}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{762B0907-2F7B-47F7-8B1C-DF5886B7EDF4}"
 EndProject

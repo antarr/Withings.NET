@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AsyncOAuth;
 using FluentAssertions;
 using NUnit.Framework;
 using Withings.NET.Client;
@@ -14,7 +13,7 @@ namespace Withings.Specifications
     {
         Authenticator _authenticator;
         WithingsCredentials _credentials;
-        RequestToken _requestToken;
+        OAuthToken _requestToken;
 
         [SetUp]
         public async Task Init()

@@ -10,11 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AsyncOAuth" Version="0.8.4" />
     <PackageReference Include="Flurl.Http" Version="3.2.4" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="RestSharp" Version="110.2.0" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
 

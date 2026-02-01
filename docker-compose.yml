@@ -13,5 +13,5 @@ services:
       - .:/app
     ports:
       - "8080:8080"
-    working_dir: /app/NancyExample
-    command: dotnet run --project NancyExample.csproj
+    working_dir: /app/Withings.Example
+    command: dotnet run --project Withings.Example.csproj

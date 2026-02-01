@@ -39,3 +39,5 @@ NancyExample/Web.config
 *.Resharper
 # dotCover
 *.dotCover
+
+**/CLAUDE.md

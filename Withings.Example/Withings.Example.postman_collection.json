@@ -1,0 +1,408 @@
+{
+	"info": {
+		"name": "Withings.Example",
+		"description": "Test suite for the Withings.NET example API.\n\nWorkflow:\n1. Run \"Request Token\" to get an OAuth request token\n2. Run \"Authorize\" (opens Withings login in browser)\n3. After authorizing, the callback fires and stores credentials\n4. Run any Withings API endpoint",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "OAuth",
+			"item": [
+				{
+					"name": "Request Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is JSON', function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"pm.test('Response contains token fields', function () {",
+									"    var json = pm.response.json();",
+									"    pm.expect(json).to.have.property('Key');",
+									"    pm.expect(json).to.have.property('Secret');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/oauth/requesttoken",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "oauth", "requesttoken"]
+						},
+						"description": "Fetches an OAuth request token from the Withings API."
+					}
+				},
+				{
+					"name": "Authorize",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 3xx redirect', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([301, 302]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/oauth/authorize",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "oauth", "authorize"]
+						},
+						"description": "Initiates the OAuth authorization flow. Redirects to the Withings authorization page."
+					}
+				},
+				{
+					"name": "Callback",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is JSON', function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"pm.test('Response contains access credentials', function () {",
+									"    var json = pm.response.json();",
+									"    pm.expect(json).to.have.property('Key');",
+									"    pm.expect(json).to.have.property('Secret');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/oauth/callback?userid={{userid}}&oauth_verifier={{oauth_verifier}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "oauth", "callback"],
+							"query": [
+								{
+									"key": "userid",
+									"value": "{{userid}}",
+									"description": "Withings user ID returned after authorization"
+								},
+								{
+									"key": "oauth_verifier",
+									"value": "{{oauth_verifier}}",
+									"description": "OAuth verifier code from Withings"
+								}
+							]
+						},
+						"description": "OAuth callback endpoint. Exchanges the request token and verifier for an access token."
+					}
+				},
+				{
+					"name": "Root Redirect",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 301 permanent redirect', function () {",
+									"    pm.response.to.have.status(301);",
+									"});",
+									"",
+									"pm.test('Redirects to /api/oauth/authorize', function () {",
+									"    pm.expect(pm.response.headers.get('Location')).to.include('/api/oauth/authorize');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": ["{{baseUrl}}"],
+							"path": [""]
+						},
+						"description": "Root endpoint. Should permanently redirect to the OAuth authorize endpoint."
+					}
+				}
+			],
+			"description": "OAuth authentication flow endpoints."
+		},
+		{
+			"name": "Withings API",
+			"item": [
+				{
+					"name": "Activity Measures (Date Range)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is JSON', function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/withings/activity",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "withings", "activity"]
+						},
+						"description": "Fetches activity measures for a hardcoded date range (2017-01-01 to 2017-03-30). Requires completed OAuth flow."
+					}
+				},
+				{
+					"name": "Daily Activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is JSON', function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/withings/dailyactivity",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "withings", "dailyactivity"]
+						},
+						"description": "Fetches daily activity measures for the last 30 days. Requires completed OAuth flow."
+					}
+				},
+				{
+					"name": "Sleep Summary",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is JSON', function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/withings/sleepsummary",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "withings", "sleepsummary"]
+						},
+						"description": "Fetches sleep summary for a hardcoded date range (2017-01-01 to 2017-03-30). Requires completed OAuth flow."
+					}
+				},
+				{
+					"name": "Workouts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is JSON', function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/withings/workouts",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "withings", "workouts"]
+						},
+						"description": "Fetches workouts for a hardcoded date range (2017-06-01 to 2017-06-05). Requires completed OAuth flow."
+					}
+				},
+				{
+					"name": "Sleep Measures",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is JSON', function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/withings/sleepmeasures",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "withings", "sleepmeasures"]
+						},
+						"description": "Fetches sleep measures for the last 90 days. Requires completed OAuth flow."
+					}
+				},
+				{
+					"name": "Body Measures (Date Range)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is JSON', function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/withings/body",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "withings", "body"]
+						},
+						"description": "Fetches body measures for a hardcoded date range (2017-05-08 to 2017-05-10). Requires completed OAuth flow."
+					}
+				},
+				{
+					"name": "Body Measures (Since Date)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is JSON', function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/withings/bodysince",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "withings", "bodysince"]
+						},
+						"description": "Fetches body measures since a hardcoded date (2017-05-08). Requires completed OAuth flow."
+					}
+				},
+				{
+					"name": "Intra-day Activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is JSON', function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/withings/intraday",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "withings", "intraday"]
+						},
+						"description": "Fetches intra-day activity data for the last 90 days. Requires completed OAuth flow."
+					}
+				}
+			],
+			"description": "Withings API data endpoints. All require a completed OAuth flow first."
+		}
+	]
+}

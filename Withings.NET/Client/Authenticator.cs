@@ -1,9 +1,12 @@
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
-using Newtonsoft.Json;
+using Flurl.Http.Configuration;
 using Withings.NET.Models;
 
 [assembly: InternalsVisibleTo("Withings.Net.Specifications")]
@@ -17,6 +20,8 @@ namespace Withings.NET.Client
 
         const string AuthorizeUrl = "https://account.withings.com/oauth2_user/authorize2";
         const string TokenUrl = "https://wbsapi.withings.net/v2/oauth2";
+
+        private static readonly ISerializer _jsonSerializer = new SystemTextJsonSerializer();
 
         public Authenticator(WithingsCredentials credentials)
         {
@@ -38,7 +43,10 @@ namespace Withings.NET.Client
 
         public async Task<OAuthToken> GetAccessToken(string code)
         {
-            var response = await TokenUrl
+            var request = new FlurlRequest(TokenUrl);
+            request.Settings.JsonSerializer = _jsonSerializer;
+
+            var response = await request
                 .PostUrlEncodedAsync(new
                 {
                     action = "requesttoken",
@@ -61,7 +69,10 @@ namespace Withings.NET.Client
 
         public async Task<OAuthToken> RefreshAccessToken(string refreshToken)
         {
-             var response = await TokenUrl
+             var request = new FlurlRequest(TokenUrl);
+             request.Settings.JsonSerializer = _jsonSerializer;
+
+             var response = await request
                 .PostUrlEncodedAsync(new
                 {
                     action = "requesttoken",
@@ -83,14 +94,46 @@ namespace Withings.NET.Client
 
         private class WithingsResponse<T>
         {
-            [JsonProperty("status")]
+            [JsonPropertyName("status")]
             public int Status { get; set; }
 
-            [JsonProperty("body")]
+            [JsonPropertyName("body")]
             public T Body { get; set; }
 
-            [JsonProperty("error")]
+            [JsonPropertyName("error")]
             public string Error { get; set; }
+        }
+    }
+
+    public class SystemTextJsonSerializer : ISerializer
+    {
+        private readonly JsonSerializerOptions _options;
+
+        public SystemTextJsonSerializer(JsonSerializerOptions options = null)
+        {
+            _options = options ?? new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+        }
+
+        public T Deserialize<T>(string s)
+        {
+            return JsonSerializer.Deserialize<T>(s, _options);
+        }
+
+        public T Deserialize<T>(Stream stream)
+        {
+             using (var reader = new StreamReader(stream))
+             {
+                 var text = reader.ReadToEnd();
+                 return JsonSerializer.Deserialize<T>(text, _options);
+             }
+        }
+
+        public string Serialize(object obj)
+        {
+            return JsonSerializer.Serialize(obj, _options);
         }
     }
 }

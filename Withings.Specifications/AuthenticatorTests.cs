@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
@@ -13,47 +13,30 @@ namespace Withings.Specifications
     {
         Authenticator _authenticator;
         WithingsCredentials _credentials;
-        OAuthToken _requestToken;
 
         [SetUp]
-        public async Task Init()
+        public void Init()
         {
             _credentials = new WithingsCredentials();
-          _credentials.SetCallbackUrl(Environment.GetEnvironmentVariable("WithingsCallbackUrl"));
-            _credentials.SetConsumerProperties(Environment.GetEnvironmentVariable("WithingsConsumerKey"), Environment.GetEnvironmentVariable("WithingsConsumerSecret"));
+            _credentials.SetCallbackUrl(Environment.GetEnvironmentVariable("WithingsCallbackUrl") ?? "http://localhost:8080/api/oauth/callback");
+            _credentials.SetConsumerProperties(Environment.GetEnvironmentVariable("WithingsConsumerKey") ?? "key", Environment.GetEnvironmentVariable("WithingsConsumerSecret") ?? "secret");
             _authenticator = new Authenticator(_credentials);
-            _requestToken = await _authenticator.GetRequestToken();
          }
 
         [Test]
-        public void RequestTokenTest()
+        public void GetAuthCodeUrlTest()
         {
-            _requestToken.Key.Should().NotBeNullOrEmpty();
-            _requestToken.Secret.Should().NotBeNullOrEmpty();
-        }
-
-        [Test]
-        public void AuthorizeUrlTest()
-        {
-            var url = _authenticator.UserRequestUrl(_requestToken);
+            var url = _authenticator.GetAuthCodeUrl("user.info,user.metrics", "state");
             url.Should().NotBeNullOrEmpty();
+            url.Should().Contain("response_type=code");
+            url.Should().Contain("client_id=");
+            url.Should().Contain("scope=user.info%2Cuser.metrics");
         }
 
         [Test]
-        public void InvalidAuthorizeUrlTest()
+        public void InvalidExchangeRequestForAccessToken()
         {
-            Assert.Throws<ArgumentNullException>(() => _authenticator.UserRequestUrl(null));
-        }
-
-        [Test]
-        public void ExchangeInvalidRequestTokenForAccessTokenTest()
-        {
-            Assert.Throws<AggregateException>(InvalidExchangeRequestForAccessToken);
-        }
-
-        void InvalidExchangeRequestForAccessToken()
-        {
-            var unused = _authenticator.ExchangeRequestTokenForAccessToken(_requestToken, _requestToken.Secret).Result;
+            Assert.ThrowsAsync<Exception>(async () => await _authenticator.GetAccessToken("invalid_code"));
         }
     }
 }

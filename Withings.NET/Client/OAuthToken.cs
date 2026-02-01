@@ -1,14 +1,25 @@
+using System.Text.Json.Serialization;
+
 namespace Withings.NET.Client
 {
     public class OAuthToken
     {
-        public OAuthToken(string key, string secret)
-        {
-            Key = key;
-            Secret = secret;
-        }
+        [JsonPropertyName("access_token")]
+        public string AccessToken { get; set; }
 
-        public string Key { get; }
-        public string Secret { get; }
+        [JsonPropertyName("refresh_token")]
+        public string RefreshToken { get; set; }
+
+        [JsonPropertyName("expires_in")]
+        public int ExpiresIn { get; set; }
+
+        [JsonPropertyName("scope")]
+        public string Scope { get; set; }
+
+        [JsonPropertyName("token_type")]
+        public string TokenType { get; set; }
+
+        [JsonPropertyName("userid")]
+        public string UserId { get; set; }
     }
 }

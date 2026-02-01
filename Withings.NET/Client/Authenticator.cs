@@ -1,8 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Flurl;
+using Flurl.Http;
+using Newtonsoft.Json;
 using Withings.NET.Models;
 
 [assembly: InternalsVisibleTo("Withings.Net.Specifications")]
@@ -10,79 +11,86 @@ namespace Withings.NET.Client
 {
     public class Authenticator
     {
-        private static readonly OAuthBase _oAuth = new OAuthBase();
-        private static readonly HttpClient _httpClient = new HttpClient();
-
-        readonly string _consumerKey;
-        readonly string _consumerSecret;
+        readonly string _clientId;
+        readonly string _clientSecret;
         readonly string _callbackUrl;
+
+        const string AuthorizeUrl = "https://account.withings.com/oauth2_user/authorize2";
+        const string TokenUrl = "https://wbsapi.withings.net/v2/oauth2";
 
         public Authenticator(WithingsCredentials credentials)
         {
-          _consumerKey = credentials.ConsumerKey;
-          _consumerSecret = credentials.ConsumerSecret;
+          _clientId = credentials.ClientId;
+          _clientSecret = credentials.ClientSecret;
           _callbackUrl = credentials.CallbackUrl;
         }
 
-        public async Task<OAuthToken> GetRequestToken()
+        public string GetAuthCodeUrl(string scope, string state)
         {
-          var url = new Uri("https://oauth.withings.com/account/request_token"
-              + "?oauth_callback=" + Uri.EscapeDataString(_callbackUrl ?? ""));
-
-          string nonce = _oAuth.GenerateNonce();
-          string timeStamp = _oAuth.GenerateTimeStamp();
-          string normalizedUrl;
-          string normalizedParams;
-          string signature = _oAuth.GenerateSignature(url, _consumerKey, _consumerSecret,
-              null, null, "GET", timeStamp, nonce,
-              OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out normalizedParams);
-
-          var requestUrl = normalizedUrl + "?" + normalizedParams
-              + "&oauth_signature=" + Uri.EscapeDataString(signature);
-
-          var response = await _httpClient.GetStringAsync(requestUrl).ConfigureAwait(false);
-          var parsed = ParseResponseParameters(response);
-
-          return new OAuthToken(parsed["oauth_token"], parsed["oauth_token_secret"]);
+            return AuthorizeUrl
+                .SetQueryParam("response_type", "code")
+                .SetQueryParam("client_id", _clientId)
+                .SetQueryParam("state", state)
+                .SetQueryParam("scope", scope)
+                .SetQueryParam("redirect_uri", _callbackUrl)
+                .ToString();
         }
 
-        public string UserRequestUrl(OAuthToken token)
+        public async Task<OAuthToken> GetAccessToken(string code)
         {
-          return "https://oauth.withings.com/account/authorize?oauth_token=" + Uri.EscapeDataString(token.Key);
-        }
+            var response = await TokenUrl
+                .PostUrlEncodedAsync(new
+                {
+                    action = "requesttoken",
+                    grant_type = "authorization_code",
+                    client_id = _clientId,
+                    client_secret = _clientSecret,
+                    code = code,
+                    redirect_uri = _callbackUrl
+                })
+                .ReceiveJson<WithingsResponse<OAuthToken>>()
+                .ConfigureAwait(false);
 
-        public async Task<OAuthToken> ExchangeRequestTokenForAccessToken(OAuthToken requestToken, string oAuthVerifier)
-        {
-            var url = new Uri("https://oauth.withings.com/account/access_token");
-
-            string nonce = _oAuth.GenerateNonce();
-            string timeStamp = _oAuth.GenerateTimeStamp();
-            string normalizedUrl;
-            string normalizedParams;
-            string signature = _oAuth.GenerateSignature(url, _consumerKey, _consumerSecret,
-                requestToken.Key, requestToken.Secret, "GET", timeStamp, nonce,
-                OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out normalizedParams);
-
-            var requestUrl = normalizedUrl + "?" + normalizedParams
-                + "&oauth_verifier=" + Uri.EscapeDataString(oAuthVerifier)
-                + "&oauth_signature=" + Uri.EscapeDataString(signature);
-
-            var response = await _httpClient.GetStringAsync(requestUrl).ConfigureAwait(false);
-            var parsed = ParseResponseParameters(response);
-
-            return new OAuthToken(parsed["oauth_token"], parsed["oauth_token_secret"]);
-        }
-
-        private static Dictionary<string, string> ParseResponseParameters(string response)
-        {
-            var result = new Dictionary<string, string>();
-            foreach (var pair in response.Split('&'))
+            if (response.Status != 0)
             {
-                var parts = pair.Split('=');
-                if (parts.Length == 2)
-                    result[Uri.UnescapeDataString(parts[0])] = Uri.UnescapeDataString(parts[1]);
+                 throw new Exception($"Withings API Error: {response.Status} - {response.Error}");
             }
-            return result;
+
+            return response.Body;
+        }
+
+        public async Task<OAuthToken> RefreshAccessToken(string refreshToken)
+        {
+             var response = await TokenUrl
+                .PostUrlEncodedAsync(new
+                {
+                    action = "requesttoken",
+                    grant_type = "refresh_token",
+                    client_id = _clientId,
+                    client_secret = _clientSecret,
+                    refresh_token = refreshToken
+                })
+                .ReceiveJson<WithingsResponse<OAuthToken>>()
+                .ConfigureAwait(false);
+
+            if (response.Status != 0)
+            {
+                 throw new Exception($"Withings API Error: {response.Status} - {response.Error}");
+            }
+
+            return response.Body;
+        }
+
+        private class WithingsResponse<T>
+        {
+            [JsonProperty("status")]
+            public int Status { get; set; }
+
+            [JsonProperty("body")]
+            public T Body { get; set; }
+
+            [JsonProperty("error")]
+            public string Error { get; set; }
         }
     }
 }

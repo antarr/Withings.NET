@@ -21,10 +21,10 @@ credentials.SetConsumerProperties(
 var authenticator = new Authenticator(credentials);
 var session = new Dictionary<string, string>();
 
-var activityStartDate = DateTime.Parse("2017-01-01");
-var activityEndDate = DateTime.Parse("2017-03-30");
-var bodyStartDate = DateTime.Parse("2017-05-08");
-var bodyEndDate = DateTime.Parse("2017-05-10");
+var activityStartDate = new DateTime(2017, 1, 1);
+var activityEndDate = new DateTime(2017, 3, 30);
+var bodyStartDate = new DateTime(2017, 5, 8);
+var bodyEndDate = new DateTime(2017, 5, 10);
 
 app.MapGet("/", () => Results.Redirect("/api/oauth/authorize", permanent: true));
 

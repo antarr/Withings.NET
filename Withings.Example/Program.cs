@@ -21,6 +21,11 @@ credentials.SetConsumerProperties(
 var authenticator = new Authenticator(credentials);
 var session = new Dictionary<string, string>();
 
+var activityStartDate = DateTime.Parse("2017-01-01");
+var activityEndDate = DateTime.Parse("2017-03-30");
+var bodyStartDate = DateTime.Parse("2017-05-08");
+var bodyEndDate = DateTime.Parse("2017-05-10");
+
 app.MapGet("/", () => Results.Redirect("/api/oauth/authorize", permanent: true));
 
 app.MapGet("/api/oauth/authorize", () =>
@@ -125,8 +130,8 @@ app.MapGet("/api/withings/body", async () =>
     var client = new WithingsClient(credentials);
     var activity = await client.GetBodyMeasures(
         session["UserId"],
-        DateTime.Parse("2017-05-08"),
-        DateTime.Parse("2017-05-10"),
+        bodyStartDate,
+        bodyEndDate,
         session["AccessToken"]);
     return Results.Json(activity);
 });
@@ -136,7 +141,7 @@ app.MapGet("/api/withings/bodysince", async () =>
     var client = new WithingsClient(credentials);
     var activity = await client.GetBodyMeasures(
         session["UserId"],
-        DateTime.Parse("2017-05-08"),
+        bodyStartDate,
         session["AccessToken"]);
     return Results.Json(activity);
 });

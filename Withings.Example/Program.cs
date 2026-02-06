@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
@@ -12,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMemoryCache();
 var app = builder.Build();
 
+app.UseSession();
+
 var credentials = new WithingsCredentials();
 credentials.SetCallbackUrl(Environment.GetEnvironmentVariable("WithingsCallbackUrl"));
 credentials.SetConsumerProperties(
@@ -19,7 +19,6 @@ credentials.SetConsumerProperties(
     Environment.GetEnvironmentVariable("WithingsConsumerSecret"));
 
 var authenticator = new Authenticator(credentials);
-var session = new Dictionary<string, string>();
 
 var activityStartDate = new DateTime(2017, 1, 1);
 var activityEndDate = new DateTime(2017, 3, 30);
@@ -28,10 +27,10 @@ var bodyEndDate = new DateTime(2017, 5, 10);
 
 app.MapGet("/", () => Results.Redirect("/api/oauth/authorize", permanent: true));
 
-app.MapGet("/api/oauth/authorize", () =>
+app.MapGet("/api/oauth/authorize", (HttpContext context) =>
 {
     var state = Guid.NewGuid().ToString();
-    session["State"] = state;
+    context.Session.SetString("State", state);
     var scope = "user.info,user.metrics,user.activity";
     var url = authenticator.GetAuthCodeUrl(scope, state);
     return Results.Redirect(url);
@@ -49,14 +48,15 @@ app.MapGet("/api/oauth/callback", async (HttpContext context) =>
     if (string.IsNullOrWhiteSpace(state))
         return Results.BadRequest("Missing required query parameter 'state'.");
 
-    if (!session.TryGetValue("State", out var storedState) || storedState != state)
+    var storedState = context.Session.GetString("State");
+    if (string.IsNullOrEmpty(storedState) || storedState != state)
          return Results.BadRequest("Invalid state.");
 
     var token = await authenticator.GetAccessToken(code);
 
-    session["AccessToken"] = token.AccessToken;
-    session["RefreshToken"] = token.RefreshToken;
-    session["UserId"] = token.UserId;
+    context.Session.SetString("AccessToken", token.AccessToken);
+    context.Session.SetString("RefreshToken", token.RefreshToken);
+    context.Session.SetString("UserId", token.UserId);
 
     return Results.Json(token);
 });
@@ -84,76 +84,114 @@ app.MapGet("/api/withings/activity", async (IMemoryCache cache) =>
     return Results.Json(activity);
 });
 
-app.MapGet("/api/withings/dailyactivity", async () =>
+app.MapGet("/api/withings/dailyactivity", async (HttpContext context) =>
 {
+    var userId = context.Session.GetString("UserId");
+    var accessToken = context.Session.GetString("AccessToken");
+
+    if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(accessToken))
+        return Results.Unauthorized();
+
     var client = new WithingsClient(credentials);
     var activity = await client.GetActivityMeasures(
         DateTime.Today.AddDays(-30),
-        session["UserId"],
-        session["AccessToken"]);
+        userId,
+        accessToken);
     return Results.Json(activity);
 });
 
-app.MapGet("/api/withings/sleepsummary", async () =>
+app.MapGet("/api/withings/sleepsummary", async (HttpContext context) =>
 {
+    var accessToken = context.Session.GetString("AccessToken");
+    if (string.IsNullOrEmpty(accessToken))
+        return Results.Unauthorized();
+
     var client = new WithingsClient(credentials);
     var activity = await client.GetSleepSummary(
         "2017-01-01",
         "2017-03-30",
-        session["AccessToken"]);
+        accessToken);
     return Results.Json(activity);
 });
 
-app.MapGet("/api/withings/workouts", async () =>
+app.MapGet("/api/withings/workouts", async (HttpContext context) =>
 {
+    var accessToken = context.Session.GetString("AccessToken");
+    if (string.IsNullOrEmpty(accessToken))
+        return Results.Unauthorized();
+
     var client = new WithingsClient(credentials);
     var activity = await client.GetWorkouts(
         "2017-06-01",
         "2017-06-05",
-        session["AccessToken"]);
+        accessToken);
     return Results.Json(activity);
 });
 
-app.MapGet("/api/withings/sleepmeasures", async () =>
+app.MapGet("/api/withings/sleepmeasures", async (HttpContext context) =>
 {
+    var userId = context.Session.GetString("UserId");
+    var accessToken = context.Session.GetString("AccessToken");
+
+    if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(accessToken))
+        return Results.Unauthorized();
+
     var client = new WithingsClient(credentials);
     var activity = await client.GetSleepMeasures(
-        session["UserId"],
+        userId,
         DateTime.Now.AddDays(-90),
         DateTime.Now.AddDays(-1),
-        session["AccessToken"]);
+        accessToken);
     return Results.Json(activity);
 });
 
-app.MapGet("/api/withings/body", async () =>
+app.MapGet("/api/withings/body", async (HttpContext context) =>
 {
+    var userId = context.Session.GetString("UserId");
+    var accessToken = context.Session.GetString("AccessToken");
+
+    if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(accessToken))
+        return Results.Unauthorized();
+
     var client = new WithingsClient(credentials);
     var activity = await client.GetBodyMeasures(
-        session["UserId"],
-        bodyStartDate,
-        bodyEndDate,
-        session["AccessToken"]);
+        userId,
+        DateTime.Parse("2017-05-08"),
+        DateTime.Parse("2017-05-10"),
+        accessToken);
     return Results.Json(activity);
 });
 
-app.MapGet("/api/withings/bodysince", async () =>
+app.MapGet("/api/withings/bodysince", async (HttpContext context) =>
 {
+    var userId = context.Session.GetString("UserId");
+    var accessToken = context.Session.GetString("AccessToken");
+
+    if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(accessToken))
+        return Results.Unauthorized();
+
     var client = new WithingsClient(credentials);
     var activity = await client.GetBodyMeasures(
-        session["UserId"],
-        bodyStartDate,
-        session["AccessToken"]);
+        userId,
+        DateTime.Parse("2017-05-08"),
+        accessToken);
     return Results.Json(activity);
 });
 
-app.MapGet("/api/withings/intraday", async () =>
+app.MapGet("/api/withings/intraday", async (HttpContext context) =>
 {
+    var userId = context.Session.GetString("UserId");
+    var accessToken = context.Session.GetString("AccessToken");
+
+    if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(accessToken))
+        return Results.Unauthorized();
+
     var client = new WithingsClient(credentials);
     var activity = await client.GetIntraDayActivity(
-        session["UserId"],
+        userId,
         DateTime.Now.AddDays(-90),
         DateTime.Now.AddDays(-1),
-        session["AccessToken"]);
+        accessToken);
     return Results.Json(activity);
 });
 

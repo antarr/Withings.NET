@@ -1,16 +1,22 @@
 using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Withings.NET.Client;
 using Withings.NET.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddMemoryCache();
-var app = builder.Build();
 
-app.UseSession();
+// Add services to the container.
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var credentials = new WithingsCredentials();
 credentials.SetCallbackUrl(Environment.GetEnvironmentVariable("WithingsCallbackUrl"));
@@ -25,11 +31,6 @@ builder.Services.AddSingleton<WithingsClient>();
 var app = builder.Build();
 
 app.UseSession();
-
-var activityStartDate = new DateTime(2017, 1, 1);
-var activityEndDate = new DateTime(2017, 3, 30);
-var bodyStartDate = new DateTime(2017, 5, 8);
-var bodyEndDate = new DateTime(2017, 5, 10);
 
 app.MapGet("/", () => Results.Redirect("/api/oauth/authorize", permanent: true));
 
@@ -67,26 +68,19 @@ app.MapGet("/api/oauth/callback", async (HttpContext context, Authenticator auth
     return Results.Json(token);
 });
 
-app.MapGet("/api/withings/activity", async (IMemoryCache cache) =>
+app.MapGet("/api/withings/activity", async (HttpContext context, WithingsClient client) =>
 {
-    var start = DateTime.Parse("2017-01-01");
-    var end = DateTime.Parse("2017-03-30");
-    var userId = session["UserId"];
-    var accessToken = session["AccessToken"];
+    var userId = context.Session.GetString("UserId");
+    var accessToken = context.Session.GetString("AccessToken");
 
-    var key = $"activity_{userId}_{start:yyyyMMdd}_{end:yyyyMMdd}";
+    if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(accessToken))
+        return Results.Unauthorized();
 
-    var activity = await cache.GetOrCreateAsync(key, async entry =>
-    {
-        var client = new WithingsClient(credentials);
-        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
-        return await client.GetActivityMeasures(
-            start,
-            end,
-            userId,
-            accessToken);
-    });
-
+    var activity = await client.GetActivityMeasures(
+        DateTime.Parse("2017-01-01"),
+        DateTime.Parse("2017-03-30"),
+        userId,
+        accessToken);
     return Results.Json(activity);
 });
 

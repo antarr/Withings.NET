@@ -19,6 +19,9 @@ namespace Withings.NET.Client
         public WithingsClient(WithingsCredentials credentials)
         {
             _credentials = credentials;
+            // Enable case-insensitive property name handling for strongly-typed models.
+            // Note: ExpandoObjectConverter ignores PropertyNameCaseInsensitive and always
+            // uses the JSON property names as-is when creating ExpandoObject keys.
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             options.Converters.Add(new ExpandoObjectConverter());
             _serializer = new DefaultJsonSerializer(options);

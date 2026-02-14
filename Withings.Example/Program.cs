@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Withings.NET.Client;
 using Withings.NET.Models;
@@ -10,6 +11,7 @@ using Withings.NET.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddMemoryCache();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -84,7 +86,7 @@ app.MapGet("/api/withings/activity", async (HttpContext context, WithingsClient 
     return Results.Json(activity);
 });
 
-app.MapGet("/api/withings/dailyactivity", async (HttpContext context, WithingsClient client) =>
+app.MapGet("/api/withings/dailyactivity", async (HttpContext context, WithingsClient client, IMemoryCache cache) =>
 {
     var userId = context.Session.GetString("UserId");
     var accessToken = context.Session.GetString("AccessToken");
@@ -92,10 +94,15 @@ app.MapGet("/api/withings/dailyactivity", async (HttpContext context, WithingsCl
     if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(accessToken))
         return Results.Unauthorized();
 
-    var activity = await client.GetActivityMeasures(
-        DateTime.Today.AddDays(-30),
-        userId,
-        accessToken);
+    var cacheKey = $"dailyactivity_{userId}_{DateTime.Today:yyyyMMdd}";
+    var activity = await cache.GetOrCreateAsync(cacheKey, async entry =>
+    {
+        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+        return await client.GetActivityMeasures(
+            DateTime.Today.AddDays(-30),
+            userId,
+            accessToken);
+    });
     return Results.Json(activity);
 });
 

@@ -124,10 +124,9 @@ namespace Withings.NET.Client
 
         public T Deserialize<T>(Stream stream)
         {
-             using (var reader = new StreamReader(stream))
+             using (stream)
              {
-                 var text = reader.ReadToEnd();
-                 return JsonSerializer.Deserialize<T>(text, _options);
+                 return JsonSerializer.Deserialize<T>(stream, _options);
              }
         }
 

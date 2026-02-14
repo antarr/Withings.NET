@@ -23,7 +23,12 @@ namespace Withings.NET.Client
 
         public static long ToUnixTime(this DateTime date)
         {
-            return Convert.ToInt64((date - Epoch).TotalSeconds);
+            if (date.Kind == DateTimeKind.Unspecified)
+            {
+                return new DateTimeOffset(date.Ticks, TimeSpan.Zero).ToUnixTimeSeconds();
+            }
+
+            return new DateTimeOffset(date).ToUnixTimeSeconds();
         }
     }
 }

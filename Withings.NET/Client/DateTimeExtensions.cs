@@ -23,7 +23,18 @@ namespace Withings.NET.Client
 
         public static long ToUnixTime(this DateTime date)
         {
-            return Convert.ToInt64((date - Epoch).TotalSeconds);
+            if (date.Kind == DateTimeKind.Unspecified)
+            {
+                return new DateTimeOffset(date.Ticks, TimeSpan.Zero).ToUnixTimeSeconds();
+            }
+
+            if (date.Kind == DateTimeKind.Local && TimeZoneInfo.Local.IsInvalidTime(date))
+            {
+                throw new ArgumentException(
+                    "The specified local DateTime represents an invalid time in the local time zone (for example, during a DST transition gap) and cannot be converted to Unix time.",
+                    nameof(date));
+            }
+            return new DateTimeOffset(date).ToUnixTimeSeconds();
         }
     }
 }

@@ -21,8 +21,6 @@ namespace Withings.NET.Client
         const string AuthorizeUrl = "https://account.withings.com/oauth2_user/authorize2";
         const string TokenUrl = "https://wbsapi.withings.net/v2/oauth2";
 
-        private static readonly ISerializer _jsonSerializer = new SystemTextJsonSerializer();
-
         public Authenticator(WithingsCredentials credentials)
         {
           _clientId = credentials.ClientId;
@@ -44,7 +42,6 @@ namespace Withings.NET.Client
         public async Task<OAuthToken> GetAccessToken(string code)
         {
             var request = new FlurlRequest(TokenUrl);
-            request.Settings.JsonSerializer = _jsonSerializer;
 
             var response = await request
                 .PostUrlEncodedAsync(new
@@ -70,7 +67,6 @@ namespace Withings.NET.Client
         public async Task<OAuthToken> RefreshAccessToken(string refreshToken)
         {
              var request = new FlurlRequest(TokenUrl);
-             request.Settings.JsonSerializer = _jsonSerializer;
 
              var response = await request
                 .PostUrlEncodedAsync(new
@@ -105,34 +101,4 @@ namespace Withings.NET.Client
         }
     }
 
-    public class SystemTextJsonSerializer : ISerializer
-    {
-        private readonly JsonSerializerOptions _options;
-
-        public SystemTextJsonSerializer(JsonSerializerOptions options = null)
-        {
-            _options = options ?? new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-        }
-
-        public T Deserialize<T>(string s)
-        {
-            return JsonSerializer.Deserialize<T>(s, _options);
-        }
-
-        public T Deserialize<T>(Stream stream)
-        {
-             using (stream)
-             {
-                 return JsonSerializer.Deserialize<T>(stream, _options);
-             }
-        }
-
-        public string Serialize(object obj)
-        {
-            return JsonSerializer.Serialize(obj, _options);
-        }
-    }
 }

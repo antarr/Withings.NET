@@ -58,6 +58,8 @@ namespace Withings.NET.Client
                 case JsonTokenType.Number:
                     if (reader.TryGetInt64(out long l))
                         return l;
+                    if (reader.TryGetDecimal(out decimal d))
+                        return d;
                     return reader.GetDouble();
                 case JsonTokenType.True:
                     return true;

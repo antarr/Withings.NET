@@ -94,12 +94,13 @@ app.MapGet("/api/withings/dailyactivity", async (HttpContext context, WithingsCl
     if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(accessToken))
         return Results.Unauthorized();
 
-    var cacheKey = $"dailyactivity_{userId}_{DateTime.Today:yyyyMMdd}";
+    var today = DateTime.Today;
+    var cacheKey = $"dailyactivity_{userId}_{today:yyyyMMdd}";
     var activity = await cache.GetOrCreateAsync(cacheKey, async entry =>
     {
         entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
         return await client.GetActivityMeasures(
-            DateTime.Today.AddDays(-30),
+            today.AddDays(-30),
             userId,
             accessToken);
     });

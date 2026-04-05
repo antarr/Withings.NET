@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -58,7 +57,7 @@ namespace Withings.NET.Client
 
             if (response.Status != 0)
             {
-                 throw new Exception($"Withings API Error: {response.Status}");
+                 throw new WithingsApiException(response.Status);
             }
 
             return response.Body;
@@ -82,7 +81,7 @@ namespace Withings.NET.Client
 
             if (response.Status != 0)
             {
-                 throw new Exception($"Withings API Error: {response.Status}");
+                 throw new WithingsApiException(response.Status);
             }
 
             return response.Body;

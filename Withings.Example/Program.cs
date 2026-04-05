@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -27,10 +26,10 @@ builder.Services.AddSession(options =>
 });
 
 var credentials = new WithingsCredentials();
-credentials.SetCallbackUrl(Environment.GetEnvironmentVariable("WithingsCallbackUrl"));
-credentials.SetConsumerProperties(
-    Environment.GetEnvironmentVariable("WithingsConsumerKey"),
-    Environment.GetEnvironmentVariable("WithingsConsumerSecret"));
+credentials.SetCallbackUrl(Environment.GetEnvironmentVariable("WITHINGS_CALLBACK_URL"));
+credentials.SetClientProperties(
+    Environment.GetEnvironmentVariable("WITHINGS_CLIENT_ID"),
+    Environment.GetEnvironmentVariable("WITHINGS_CLIENT_SECRET"));
 
 builder.Services.AddSingleton(credentials);
 builder.Services.AddSingleton<Authenticator>();

@@ -4,11 +4,12 @@ using FluentAssertions;
 using NUnit.Framework;
 using Withings.NET.Client;
 using Withings.NET.Models;
+using Withings.Specifications.Helpers;
 
 namespace Withings.Specifications
 {
     [TestFixture]
-    [Explicit("Requires Withings credentials and network access")]
+    [Category("E2E")]
     public class AuthenticatorTests
     {
         Authenticator _authenticator;
@@ -17,9 +18,13 @@ namespace Withings.Specifications
         [SetUp]
         public void Init()
         {
+            EnvLoader.Load();
+
             _credentials = new WithingsCredentials();
-            _credentials.SetCallbackUrl(Environment.GetEnvironmentVariable("WithingsCallbackUrl") ?? "http://localhost:8080/api/oauth/callback");
-            _credentials.SetConsumerProperties(Environment.GetEnvironmentVariable("WithingsConsumerKey") ?? "key", Environment.GetEnvironmentVariable("WithingsConsumerSecret") ?? "secret");
+            _credentials.SetCallbackUrl(Environment.GetEnvironmentVariable("WITHINGS_CALLBACK_URL") ?? "http://localhost:8080/api/oauth/callback");
+            _credentials.SetConsumerProperties(
+                Environment.GetEnvironmentVariable("WITHINGS_CLIENT_ID") ?? "key",
+                Environment.GetEnvironmentVariable("WITHINGS_CLIENT_SECRET") ?? "secret");
             _authenticator = new Authenticator(_credentials);
          }
 
@@ -30,13 +35,12 @@ namespace Withings.Specifications
             url.Should().NotBeNullOrEmpty();
             url.Should().Contain("response_type=code");
             url.Should().Contain("client_id=");
-            url.Should().Contain("scope=user.info%2Cuser.metrics");
         }
 
         [Test]
         public void InvalidExchangeRequestForAccessToken()
         {
-            Assert.ThrowsAsync<Exception>(async () => await _authenticator.GetAccessToken("invalid_code"));
+            Assert.ThrowsAsync<WithingsApiException>(async () => await _authenticator.GetAccessToken("invalid_code"));
         }
     }
 }

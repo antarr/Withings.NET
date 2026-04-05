@@ -57,5 +57,50 @@ namespace Withings.Specifications
             var expected = new DateTimeOffset(date).ToUnixTimeSeconds();
             date.ToUnixTime().Should().Be(expected);
         }
+
+        [Test]
+        public void DateTimeToUnixTimeTest_InvalidLocalTime_ThrowsArgumentException()
+        {
+            // Find a DST gap time for the local time zone
+            var rules = TimeZoneInfo.Local.GetAdjustmentRules();
+            DateTime? invalidTime = null;
+
+            foreach (var rule in rules)
+            {
+                if (rule.DaylightTransitionStart.IsFixedDateRule)
+                    continue;
+
+                var year = rule.DateEnd.Year > 2100 ? 2024 : rule.DateStart.Year;
+                var transition = rule.DaylightTransitionStart;
+                var month = transition.Month;
+                var day = transition.Day;
+
+                // Find the first matching day-of-week in the given week
+                var firstDayOfMonth = new DateTime(year, month, 1);
+                var daysUntilTarget = ((int)transition.DayOfWeek - (int)firstDayOfMonth.DayOfWeek + 7) % 7;
+                var candidateDay = 1 + daysUntilTarget + (transition.Week - 1) * 7;
+
+                if (candidateDay > DateTime.DaysInMonth(year, month))
+                    continue;
+
+                var candidate = new DateTime(year, month, candidateDay,
+                    transition.TimeOfDay.Hour, transition.TimeOfDay.Minute, 0, DateTimeKind.Local);
+
+                if (TimeZoneInfo.Local.IsInvalidTime(candidate))
+                {
+                    invalidTime = candidate;
+                    break;
+                }
+            }
+
+            if (invalidTime == null)
+            {
+                Assert.Ignore("No DST gap found in local time zone");
+                return;
+            }
+
+            Action act = () => invalidTime.Value.ToUnixTime();
+            act.Should().Throw<ArgumentException>();
+        }
     }
 }

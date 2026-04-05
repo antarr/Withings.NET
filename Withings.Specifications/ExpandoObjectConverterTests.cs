@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Text.Json;
 using FluentAssertions;
@@ -30,9 +31,10 @@ namespace Withings.Specifications
 
             // Assert
             result.Should().NotBeNull();
-            ((dynamic)result).name.Should().Be("John");
-            ((dynamic)result).age.Should().Be(30);
-            ((dynamic)result).isDeveloper.Should().Be(true);
+            var dict = (IDictionary<string, object>)result;
+            dict["name"].Should().Be("John");
+            dict["age"].Should().Be(30);
+            dict["isDeveloper"].Should().Be(true);
         }
 
         [Test]
@@ -76,6 +78,56 @@ namespace Withings.Specifications
 
             Action act = () => JsonSerializer.Deserialize<ExpandoObject>(json, _options);
             act.Should().Throw<JsonException>();
+        }
+
+        [Test]
+        public void Read_NestedObject_ReturnsNestedExpandoObject()
+        {
+            var json = "{\"outer\": {\"inner\": \"value\"}}";
+
+            var result = JsonSerializer.Deserialize<ExpandoObject>(json, _options);
+
+            var dict = (IDictionary<string, object>)result;
+            var nested = (IDictionary<string, object>)(ExpandoObject)dict["outer"];
+            nested["inner"].Should().Be("value");
+        }
+
+        [Test]
+        public void Read_ArrayValue_ReturnsList()
+        {
+            var json = "{\"items\": [1, 2, 3]}";
+
+            var result = JsonSerializer.Deserialize<ExpandoObject>(json, _options);
+
+            var dict = (IDictionary<string, object>)result;
+            var items = (List<object>)dict["items"];
+            items.Should().HaveCount(3);
+            items[0].Should().Be((long)1);
+        }
+
+        [Test]
+        public void Read_NullValue_ReturnsNull()
+        {
+            var json = "{\"key\": null}";
+
+            var result = JsonSerializer.Deserialize<ExpandoObject>(json, _options);
+
+            var dict = (IDictionary<string, object>)result;
+            dict["key"].Should().BeNull();
+        }
+
+        [Test]
+        public void Write_ExpandoObject_ProducesValidJson()
+        {
+            var expando = new ExpandoObject();
+            var dict = (IDictionary<string, object>)expando;
+            dict["name"] = "John";
+            dict["age"] = 30;
+
+            var json = JsonSerializer.Serialize(expando, _options);
+
+            json.Should().Contain("\"name\":\"John\"");
+            json.Should().Contain("\"age\":30");
         }
     }
 }

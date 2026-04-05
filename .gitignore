@@ -41,3 +41,4 @@ NancyExample/Web.config
 *.dotCover
 
 **/CLAUDE.md
+.env

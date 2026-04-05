@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Text.Json;
 using FluentAssertions;
@@ -30,9 +31,10 @@ namespace Withings.Specifications
 
             // Assert
             result.Should().NotBeNull();
-            ((dynamic)result).name.Should().Be("John");
-            ((dynamic)result).age.Should().Be(30);
-            ((dynamic)result).isDeveloper.Should().Be(true);
+            var dict = (IDictionary<string, object>)result;
+            dict["name"].Should().Be("John");
+            dict["age"].Should().Be(30);
+            dict["isDeveloper"].Should().Be(true);
         }
 
         [Test]

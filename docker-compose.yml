@@ -1,17 +1,13 @@
-version: '3.8'
-
 services:
   tests:
     build: .
-    volumes:
-      - .:/app
-    command: sh ./run_tests.sh
+    command: dotnet test Withings.NET.sln --no-build --verbosity normal --filter "TestCategory!=E2E"
 
   web:
     build: .
-    volumes:
-      - .:/app
     ports:
       - "8080:8080"
+    env_file:
+      - .env
     working_dir: /app/Withings.Example
     command: dotnet run --project Withings.Example.csproj

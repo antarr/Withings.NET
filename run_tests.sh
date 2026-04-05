@@ -8,4 +8,4 @@ echo "Building..."
 dotnet build Withings.NET.sln --no-restore
 
 echo "Running tests..."
-dotnet test Withings.NET.sln --no-build --verbosity normal
+dotnet test Withings.NET.sln --no-build --verbosity normal --filter "TestCategory!=E2E"

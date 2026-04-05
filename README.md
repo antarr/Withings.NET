@@ -1,65 +1,126 @@
+# Withings.NET
 
-.NET Client for interacting with Withing OAuth1 Api
+.NET client for the [Withings Health Data API](https://developer.withings.com/) (OAuth 2.0).
 
-[![Build status](https://ci.appveyor.com/api/projects/status/lw9pd7gbdjgck3sq?svg=true)](https://ci.appveyor.com/project/atbyrd/withings-net)
-[![Coverage Status](https://coveralls.io/repos/github/atbyrd/Withings.NET/badge.svg?branch=master)](https://coveralls.io/github/atbyrd/Withings.NET?branch=master)
-[![codecov](https://codecov.io/gh/atbyrd/Withings.NET/branch/master/graph/badge.svg)](https://codecov.io/gh/atbyrd/Withings.NET)
-[![Documentation Status](https://readthedocs.org/projects/withingsnet/badge/?version=latest)](http://withingsnet.readthedocs.io/en/latest/?badge=latest)
+[![NuGet](https://img.shields.io/nuget/v/Withings.NET.svg)](https://www.nuget.org/packages/Withings.NET)
 
-[![NuGet](https://img.shields.io/nuget/v/Nuget.Core.svg?style=plastic)](https://www.nuget.org/packages/Withings.NET)
+## Requirements
 
-## USAGE
-Due to external dependencies, your callback url should include a username param i.e. http://localhost:49294/api/oauth/callback/{username} 
+- .NET 8.0, 9.0, or 10.0
 
-### All examples will use the Nancy Framework
+## Installation
 
-#### Authorization - Getting user authorization url
 ```
-Get["api/oauth/authorize", true] = async (nothing, ct) => 
-{
-   var url = await authenticator.UserRequstUrl(requestToken).ConfigureAwait(true);
-   new JsonRespons(url, new DefaultJsonSerializer());
-}
+dotnet add package Withings.NET
 ```
 
-## CHANGE LOG
+## Quick Start
 
-Version: 2.1.0 |
-Release Date: April 03, 2017 |
-New Features |
-Get Ability To Get Body Measures
+### 1. Configure Credentials
 
-Version: 2.0.0 |
-Release Date: April 03, 2017 |
-Breaking API Change |
-GetActivityMeasures Now Accepts DateTimes Instead of Strings for Dates
+```csharp
+var credentials = new WithingsCredentials();
+credentials.SetClientProperties("your_client_id", "your_client_secret");
+credentials.SetCallbackUrl("http://localhost:8585/callback");
+```
 
-Version: 1.1.29 |
-Release Date:April 02, 2017 |
-New Features |
-Add Abiltity To Get Sleep Measures
+### 2. OAuth 2.0 Authorization
 
-Version: 1.1.27 |
-Release Date:April 02, 2017 |
-New Features |
-Add Abiltity To Get Workout Data
+```csharp
+var authenticator = new Authenticator(credentials);
 
-Version: 1.1.26 |
-Release Date:April 02, 2017 |
-New Features |
-Add Abiltity To Get Sleep Summary Over A Range Of Days
+// Generate the authorization URL and redirect the user
+var url = authenticator.GetAuthCodeUrl("user.info,user.metrics,user.activity", state);
 
-Version: 1.1.23 |
-Release Date:April 01, 2017 |
-New Features |
-Add Abiltity To Get Activity Measures For A Specific Day
+// After the user authorizes, exchange the code for tokens
+var token = await authenticator.GetAccessToken(authorizationCode);
 
-Version: 1.1.0 |
-Release Date:April 01, 2017 |
-New Features |
-Add Abiltity To Get Activity Measures For A Date Range
+// Refresh tokens when they expire
+var newToken = await authenticator.RefreshAccessToken(token.RefreshToken);
+```
 
-Version: 1.0.0 |
-Release Date:March 06, 2017 |
-New Features |
-Complete Authorization Process
+### 3. Fetch Health Data
+
+```csharp
+var client = new WithingsClient(credentials);
+
+// Activity measures
+var activity = await client.GetActivityMeasures(startDate, endDate, userId, accessToken);
+
+// Body measures
+var body = await client.GetBodyMeasures(userId, startDate, endDate, accessToken);
+
+// Sleep summary
+var sleep = await client.GetSleepSummary("2024-01-01", "2024-01-31", accessToken);
+
+// Sleep measures
+var sleepData = await client.GetSleepMeasures(userId, startDate, endDate, accessToken);
+
+// Workouts
+var workouts = await client.GetWorkouts("2024-01-01", "2024-01-31", accessToken);
+
+// Intraday activity
+var intraday = await client.GetIntraDayActivity(userId, startDate, endDate, accessToken);
+
+// Heart
+var heartList = await client.GetHeartList(startDate, endDate, accessToken);
+var recording = await client.GetHeartRecording(signalId, accessToken);
+
+// User
+var devices = await client.GetDevices(accessToken);
+var goals = await client.GetGoals(accessToken);
+
+// Webhook subscriptions
+await client.Subscribe(callbackUrl, appli, accessToken);
+var subscriptions = await client.ListSubscriptions(appli, accessToken);
+await client.RevokeSubscription(callbackUrl, appli, accessToken);
+```
+
+## Development
+
+### Running Unit Tests
+
+```bash
+dotnet test --filter "TestCategory!=E2E"
+```
+
+### Running E2E Tests
+
+E2E tests run against the live Withings API. You need to bootstrap OAuth tokens first.
+
+1. Create a `.env` file in the project root:
+
+```
+WITHINGS_CLIENT_ID=your_client_id
+WITHINGS_CLIENT_SECRET=your_client_secret
+WITHINGS_CALLBACK_URL=http://localhost:8585/callback
+WITHINGS_REFRESH_TOKEN=
+WITHINGS_USER_ID=
+```
+
+2. Run the bootstrap script to obtain tokens:
+
+```bash
+./scripts/bootstrap-token.sh
+```
+
+3. Run E2E tests:
+
+```bash
+dotnet test --filter "TestCategory=E2E" -f net10.0
+```
+
+The E2E test suite automatically saves new refresh tokens back to `.env` after each run (Withings refresh tokens are single-use).
+
+## API Reference
+
+| Class | Description |
+|-------|-------------|
+| `Authenticator` | OAuth 2.0 authorization and token management |
+| `WithingsClient` | API client for health data endpoints |
+| `OAuthToken` | Token response with access token, refresh token, and user ID |
+| `WithingsApiException` | Exception thrown for non-zero API status codes |
+
+## License
+
+See [LICENSE](LICENSE) for details.

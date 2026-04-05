@@ -8,6 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Withings.NET.Client;
 using Withings.NET.Models;
 
+// Define constant dates for API calls to avoid repeated parsing
+var activityStart = new DateTime(2017, 01, 01);
+var activityEnd = new DateTime(2017, 03, 30);
+var bodyStart = new DateTime(2017, 05, 08);
+var bodyEnd = new DateTime(2017, 05, 10);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -79,8 +85,8 @@ app.MapGet("/api/withings/activity", async (HttpContext context, WithingsClient 
         return Results.Unauthorized();
 
     var activity = await client.GetActivityMeasures(
-        DateTime.Parse("2017-01-01"),
-        DateTime.Parse("2017-03-30"),
+        activityStart,
+        activityEnd,
         userId,
         accessToken);
     return Results.Json(activity);
@@ -159,8 +165,8 @@ app.MapGet("/api/withings/body", async (HttpContext context, WithingsClient clie
 
     var activity = await client.GetBodyMeasures(
         userId,
-        DateTime.Parse("2017-05-08"),
-        DateTime.Parse("2017-05-10"),
+        bodyStart,
+        bodyEnd,
         accessToken);
     return Results.Json(activity);
 });
@@ -175,7 +181,7 @@ app.MapGet("/api/withings/bodysince", async (HttpContext context, WithingsClient
 
     var activity = await client.GetBodyMeasures(
         userId,
-        DateTime.Parse("2017-05-08"),
+        bodyStart,
         accessToken);
     return Results.Json(activity);
 });

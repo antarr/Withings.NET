@@ -149,5 +149,91 @@ namespace Withings.NET.Client
         }
 
         #endregion
+
+        #region Heart
+
+        public async Task<ExpandoObject> GetHeartList(DateTime startDate, DateTime endDate, string accessToken)
+        {
+            var url = BuildUrl("heart",
+                ("action", "list"),
+                ("startdate", startDate.ToUnixTime().ToString()),
+                ("enddate", endDate.ToUnixTime().ToString()));
+
+            return await GetAsync(url, accessToken).ConfigureAwait(false);
+        }
+
+        public async Task<ExpandoObject> GetHeartRecording(string signalId, string accessToken)
+        {
+            var url = BuildUrl("heart",
+                ("action", "get"),
+                ("signalid", signalId));
+
+            return await GetAsync(url, accessToken).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region User
+
+        public async Task<ExpandoObject> GetDevices(string accessToken)
+        {
+            var url = BuildUrl("user",
+                ("action", "getdevice"));
+
+            return await GetAsync(url, accessToken).ConfigureAwait(false);
+        }
+
+        public async Task<ExpandoObject> GetGoals(string accessToken)
+        {
+            var url = BuildUrl("user",
+                ("action", "getgoals"));
+
+            return await GetAsync(url, accessToken).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Nudge (Webhook Subscriptions)
+
+        public async Task<ExpandoObject> Subscribe(string callbackUrl, int appli, string accessToken)
+        {
+            var url = BuildUrl("notify",
+                ("action", "subscribe"),
+                ("callbackurl", callbackUrl),
+                ("appli", appli.ToString()));
+
+            return await GetAsync(url, accessToken).ConfigureAwait(false);
+        }
+
+        public async Task<ExpandoObject> RevokeSubscription(string callbackUrl, int appli, string accessToken)
+        {
+            var url = BuildUrl("notify",
+                ("action", "revoke"),
+                ("callbackurl", callbackUrl),
+                ("appli", appli.ToString()));
+
+            return await GetAsync(url, accessToken).ConfigureAwait(false);
+        }
+
+        public async Task<ExpandoObject> GetSubscription(string callbackUrl, int appli, string accessToken)
+        {
+            var url = BuildUrl("notify",
+                ("action", "get"),
+                ("callbackurl", callbackUrl),
+                ("appli", appli.ToString()));
+
+            return await GetAsync(url, accessToken).ConfigureAwait(false);
+        }
+
+        public async Task<ExpandoObject> ListSubscriptions(int appli, string accessToken)
+        {
+            var url = BuildUrl("notify",
+                ("action", "list"),
+                ("appli", appli.ToString()));
+
+            return await GetAsync(url, accessToken).ConfigureAwait(false);
+        }
+
+        #endregion
     }
 }

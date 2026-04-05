@@ -189,5 +189,107 @@ namespace Withings.Specifications
             result.Should().NotBeNull();
             result.Should().BeOfType<ExpandoObject>();
         }
+
+        #region Heart
+
+        [Test]
+        public async Task GetHeartList_BuildsCorrectUrl()
+        {
+            var start = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var end = new DateTime(2024, 1, 31, 0, 0, 0, DateTimeKind.Utc);
+
+            await _client.GetHeartList(start, end, "token");
+
+            var url = _handler.LastRequest.RequestUri.ToString();
+            url.Should().Contain("heart");
+            url.Should().Contain("action=list");
+            url.Should().Contain($"startdate={start.ToUnixTime()}");
+            url.Should().Contain($"enddate={end.ToUnixTime()}");
+        }
+
+        [Test]
+        public async Task GetHeartRecording_BuildsCorrectUrl()
+        {
+            await _client.GetHeartRecording("signal_abc", "token");
+
+            var url = _handler.LastRequest.RequestUri.ToString();
+            url.Should().Contain("heart");
+            url.Should().Contain("action=get");
+            url.Should().Contain("signalid=signal_abc");
+        }
+
+        #endregion
+
+        #region User
+
+        [Test]
+        public async Task GetDevices_BuildsCorrectUrl()
+        {
+            await _client.GetDevices("token");
+
+            var url = _handler.LastRequest.RequestUri.ToString();
+            url.Should().Contain("user");
+            url.Should().Contain("action=getdevice");
+        }
+
+        [Test]
+        public async Task GetGoals_BuildsCorrectUrl()
+        {
+            await _client.GetGoals("token");
+
+            var url = _handler.LastRequest.RequestUri.ToString();
+            url.Should().Contain("user");
+            url.Should().Contain("action=getgoals");
+        }
+
+        #endregion
+
+        #region Nudge (Webhook Subscriptions)
+
+        [Test]
+        public async Task Subscribe_BuildsCorrectUrl()
+        {
+            await _client.Subscribe("http://example.com/webhook", 1, "token");
+
+            var url = _handler.LastRequest.RequestUri.ToString();
+            url.Should().Contain("notify");
+            url.Should().Contain("action=subscribe");
+            url.Should().Contain("appli=1");
+        }
+
+        [Test]
+        public async Task RevokeSubscription_BuildsCorrectUrl()
+        {
+            await _client.RevokeSubscription("http://example.com/webhook", 1, "token");
+
+            var url = _handler.LastRequest.RequestUri.ToString();
+            url.Should().Contain("notify");
+            url.Should().Contain("action=revoke");
+            url.Should().Contain("appli=1");
+        }
+
+        [Test]
+        public async Task GetSubscription_BuildsCorrectUrl()
+        {
+            await _client.GetSubscription("http://example.com/webhook", 1, "token");
+
+            var url = _handler.LastRequest.RequestUri.ToString();
+            url.Should().Contain("notify");
+            url.Should().Contain("action=get");
+            url.Should().Contain("appli=1");
+        }
+
+        [Test]
+        public async Task ListSubscriptions_BuildsCorrectUrl()
+        {
+            await _client.ListSubscriptions(1, "token");
+
+            var url = _handler.LastRequest.RequestUri.ToString();
+            url.Should().Contain("notify");
+            url.Should().Contain("action=list");
+            url.Should().Contain("appli=1");
+        }
+
+        #endregion
     }
 }

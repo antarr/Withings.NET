@@ -58,7 +58,7 @@ namespace Withings.NET.Client
 
             if (response.Status != 0)
             {
-                 throw new Exception($"Withings API Error: {response.Status} - {response.Error}");
+                 throw new Exception($"Withings API Error: {response.Status}");
             }
 
             return response.Body;
@@ -82,7 +82,7 @@ namespace Withings.NET.Client
 
             if (response.Status != 0)
             {
-                 throw new Exception($"Withings API Error: {response.Status} - {response.Error}");
+                 throw new Exception($"Withings API Error: {response.Status}");
             }
 
             return response.Body;

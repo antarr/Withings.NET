@@ -42,5 +42,11 @@ namespace Withings.Specifications
         {
             Assert.ThrowsAsync<WithingsApiException>(async () => await _authenticator.GetAccessToken("invalid_code"));
         }
+
+        [Test]
+        public void InvalidRefreshRequestForAccessToken()
+        {
+            Assert.ThrowsAsync<WithingsApiException>(async () => await _authenticator.RefreshAccessToken("invalid_refresh_token"));
+        }
     }
 }

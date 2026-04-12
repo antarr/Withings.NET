@@ -60,8 +60,13 @@ namespace Withings.NET.Client
             var httpResponse = await _httpClient.PostAsync(TokenUrl, content).ConfigureAwait(false);
             httpResponse.EnsureSuccessStatusCode();
 
-            var json = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var response = JsonSerializer.Deserialize<WithingsResponse<OAuthToken>>(json);
+            using var stream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            var response = await JsonSerializer.DeserializeAsync<WithingsResponse<OAuthToken>>(stream).ConfigureAwait(false);
+
+            if (response == null)
+            {
+                 throw new WithingsApiException(-1, "Empty response from Withings API");
+            }
 
             if (response.Status != 0)
             {
@@ -85,8 +90,13 @@ namespace Withings.NET.Client
             var httpResponse = await _httpClient.PostAsync(TokenUrl, content).ConfigureAwait(false);
             httpResponse.EnsureSuccessStatusCode();
 
-            var json = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var response = JsonSerializer.Deserialize<WithingsResponse<OAuthToken>>(json);
+            using var stream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            var response = await JsonSerializer.DeserializeAsync<WithingsResponse<OAuthToken>>(stream).ConfigureAwait(false);
+
+            if (response == null)
+            {
+                 throw new WithingsApiException(-1, "Empty response from Withings API");
+            }
 
             if (response.Status != 0)
             {

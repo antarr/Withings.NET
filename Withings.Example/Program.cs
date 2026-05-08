@@ -37,6 +37,7 @@ builder.Services.AddSingleton<WithingsClient>();
 
 var app = builder.Build();
 
+app.UseHttpsRedirection();
 app.UseSession();
 
 app.MapGet("/", () => Results.Redirect("/api/oauth/authorize", permanent: true));
@@ -201,4 +202,4 @@ app.MapGet("/api/withings/intraday", async (HttpContext context, WithingsClient 
     return Results.Json(activity);
 });
 
-app.Run("http://0.0.0.0:8080");
+app.Run();

@@ -13,16 +13,17 @@ namespace Withings.NET.Client
     public class WithingsClient
     {
         const string BaseUri = "https://wbsapi.withings.net/v2";
-        readonly ISerializer _serializer;
+
+        private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new ExpandoObjectConverter() }
+        };
+
+        private static readonly ISerializer _serializer = new DefaultJsonSerializer(_jsonOptions);
 
         public WithingsClient(WithingsCredentials credentials)
         {
-            // Enable case-insensitive property name handling for strongly-typed models.
-            // Note: ExpandoObjectConverter ignores PropertyNameCaseInsensitive and always
-            // uses the JSON property names as-is when creating ExpandoObject keys.
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            options.Converters.Add(new ExpandoObjectConverter());
-            _serializer = new DefaultJsonSerializer(options);
         }
 
         private IFlurlRequest GetQuery(string path)

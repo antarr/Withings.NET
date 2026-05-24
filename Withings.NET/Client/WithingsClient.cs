@@ -2,6 +2,7 @@ using System;
 using System.Dynamic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Withings.NET.Models;
@@ -40,9 +41,19 @@ namespace Withings.NET.Client
 
         private static string BuildUrl(string path, params (string key, string value)[] queryParams)
         {
-            var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+            var query = new StringBuilder();
             foreach (var (key, value) in queryParams)
-                query[key] = value;
+            {
+                if (query.Length > 0)
+                {
+                    query.Append('&');
+                }
+
+                query
+                    .Append(Uri.EscapeDataString(key))
+                    .Append('=')
+                    .Append(Uri.EscapeDataString(value ?? string.Empty));
+            }
 
             return $"{BaseUri}/{path}?{query}";
         }

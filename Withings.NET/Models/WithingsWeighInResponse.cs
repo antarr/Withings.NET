@@ -1,8 +1,5 @@
-﻿using System.Runtime.Serialization;
-
-namespace Withings.NET.Models
+﻿namespace Withings.NET.Models
 {
-  [DataContract]
   public class WithingsWeighInResponse
   {
     public WithingsBody body { get; set; }

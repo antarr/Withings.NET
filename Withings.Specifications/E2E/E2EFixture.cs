@@ -65,14 +65,20 @@ namespace Withings.Specifications.E2E
             if (!File.Exists(envPath)) return;
 
             var lines = File.ReadAllLines(envPath);
+            var updated = false;
             for (int i = 0; i < lines.Length; i++)
             {
                 if (lines[i].StartsWith($"{key}="))
                 {
                     lines[i] = $"{key}={value}";
-                    File.WriteAllLines(envPath, lines);
-                    return;
+                    updated = true;
+                    break;
                 }
+            }
+
+            if (updated)
+            {
+                File.WriteAllLines(envPath, lines);
             }
         }
     }
